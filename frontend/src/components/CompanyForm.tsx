@@ -4,7 +4,6 @@ import type { Company, CompanyContact } from '../types/company';
 import { CompanyField } from './CompanyField';
 import { TravelManagerForm } from './TravelManagerForm';
 import { ContactField } from './ContactField';
-import InputMask from 'react-input-mask';
 
 
 export function CompanyForm() {

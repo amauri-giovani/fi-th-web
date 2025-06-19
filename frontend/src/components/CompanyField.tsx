@@ -1,4 +1,5 @@
 import type { Company } from '../types/company';
+import { MaskedInput } from './MaskedInput';
 
 
 type Props = {
@@ -25,6 +26,8 @@ const placeholders: Partial<Record<keyof Company, string>> = {
 export function CompanyField({ label, name, value, disabled, onChange, multiline }: Props) {
   const placeholder = placeholders[name] || '';
 
+  const useMaskedInput = ['cnpj', 'phone', 'mobile', 'whatsapp'].includes(name);
+
   return (
     <div style={{ marginBottom: '0.75rem' }}>
       <label>{label}</label><br />
@@ -37,6 +40,13 @@ export function CompanyField({ label, name, value, disabled, onChange, multiline
           placeholder={placeholder}
           rows={3}
           style={{ width: '100%' }}
+        />
+      ) : useMaskedInput ? (
+        <MaskedInput
+          name={name}
+          value={value}
+          onChange={onChange}
+          disabled={disabled}
         />
       ) : (
         <input
