@@ -1,6 +1,7 @@
 import type { CompanyContact } from '../types/company';
 import { MaskedInput } from './MaskedInput';
 
+
 type Props = {
   label: string;
   name: keyof CompanyContact;

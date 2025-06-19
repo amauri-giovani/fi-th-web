@@ -1,3 +1,11 @@
+export type Group = {
+  id: number;
+  name: string;
+  slug: string;
+  main_company: number | null;
+  main_company_name: string | null;
+};
+
 export type Company = {
   id: number;
   name: string;
@@ -10,6 +18,11 @@ export type Company = {
   website: string;
   notes: string;
   travel_managers: CompanyContact[];
+  group: {
+    id: number;
+    name: string;
+    slug: string;
+  };
 };
 
 export type CompanyContact = {

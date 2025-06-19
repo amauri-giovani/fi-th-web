@@ -6,12 +6,17 @@ import { TravelManagerForm } from './TravelManagerForm';
 import { ContactField } from './ContactField';
 
 
-export function CompanyForm() {
+type Props = {
+  companyId: number;
+  groupId: number;
+};
+
+
+export function CompanyForm({ companyId, groupId }: Props) {
     const [company, setCompany] = useState<Company | null>(null);
     const [editMode, setEditMode] = useState(false);
     const [showTravelModal, setShowTravelModal] = useState(false);
     const [selectedContact, setSelectedContact] = useState<CompanyContact | null>(null);
-    const companyId = 1;
 
     useEffect(() => {
         api.get<Company>(`companies/companies/${companyId}/`)
@@ -28,7 +33,7 @@ export function CompanyForm() {
         event.preventDefault();
         if (!company) return;
 
-        api.put(`companies/companies/${company.id}/`, company)
+        api.put(`companies/companies/${company.id}/`, {...company, group_id: groupId})
             .then(() => setEditMode(false))
             .catch(err => console.error('Erro ao salvar empresa:', err));
     }
