@@ -1,5 +1,5 @@
 import type { CompanyContact } from '../types/company';
-
+import { MaskedInput } from './MaskedInput';
 
 type Props = {
   label: string;
@@ -21,17 +21,28 @@ const placeholders: Partial<Record<keyof CompanyContact, string>> = {
 export function ContactField({ label, name, value, disabled, onChange }: Props) {
   const placeholder = placeholders[name] || '';
 
+  const useMaskedInput = ['phone', 'mobile', 'whatsapp'].includes(name);
+
   return (
     <div style={{ marginBottom: '0.75rem' }}>
       <label>{label}</label><br />
-      <input
-        name={name}
-        value={value}
-        onChange={onChange}
-        disabled={disabled}
-        placeholder={placeholder}
-        style={{ width: '100%' }}
-      />
+      {useMaskedInput ? (
+        <MaskedInput
+          name={name}
+          value={value}
+          onChange={onChange}
+          disabled={disabled}
+        />
+      ) : (
+        <input
+          name={name}
+          value={value}
+          onChange={onChange}
+          disabled={disabled}
+          placeholder={placeholder}
+          style={{ width: '100%' }}
+        />
+      )}
     </div>
   );
 }

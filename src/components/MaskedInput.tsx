@@ -53,7 +53,6 @@ export function MaskedInput({ name, value, onChange, disabled }: Props) {
       disabled={disabled}
       format={format}
       mask="_"
-      allowEmptyFormatting
       customInput={CustomInput}
       style={{ width: '100%' }}
     />
