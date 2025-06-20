@@ -19,7 +19,12 @@
     "noUnusedParameters": true,
     "erasableSyntaxOnly": true,
     "noFallthroughCasesInSwitch": true,
-    "noUncheckedSideEffectImports": true
+    "noUncheckedSideEffectImports": true,
+
+    "baseUrl": ".",                             // ✅ necessário para os aliases
+    "paths": {
+      "@/*": ["src/*"]                          // ✅ define o alias @ para src/
+    }
   },
   "include": ["src"]
 }
