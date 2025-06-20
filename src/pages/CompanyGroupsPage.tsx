@@ -1,29 +1,61 @@
 import { useState } from "react";
 import { GroupList } from "../components/GroupList";
 import { CompanyForm } from "../components/CompanyForm";
+import { TravelManagerForm } from "../components/TravelManagerForm";
 import { Layout } from "@/components/layout/Layout";
+import { GroupTabs } from "@/components/layout/GroupTabs";
 import type { Group } from "../types/company";
+
+const TABS = [
+  "Geral",
+  "VIPs",
+  "Comercial",
+  "Financeiro",
+  "Operação",
+  "Suporte",
+  "Acordos",
+  "Empresas",
+];
 
 export function CompanyGroupsPage() {
   const [selectedGroup, setSelectedGroup] = useState<Group | null>(null);
+  const [activeTab, setActiveTab] = useState("Geral");
 
   return (
     <Layout>
       {!selectedGroup ? (
         <GroupList onSelect={setSelectedGroup} />
-      ) : selectedGroup.main_company ? (
-        <CompanyForm
-          companyId={selectedGroup.main_company}
-          groupId={selectedGroup.id}
-        />
       ) : (
-        <div className="max-w-3xl mx-auto bg-white border border-gray-200 p-6 rounded shadow">
-          <p className="text-gray-700 mb-4">
-            Este grupo ainda não tem uma empresa principal.
-          </p>
-          <button className="bg-primary text-white px-4 py-2 rounded hover:bg-primary/90 transition">
-            Adicionar empresa principal
-          </button>
+        <div className="p-6">
+          <h1 className="text-2xl font-bold text-primary mb-6">
+            Grupo {selectedGroup.name}
+          </h1>
+
+          <GroupTabs
+            tabs={TABS}
+            active={activeTab}
+            onChange={setActiveTab}
+          />
+
+          <div className="mt-8">
+            {activeTab === "Geral" && (
+              <>
+                <CompanyForm
+                  groupId={selectedGroup.id}
+                  companyId={selectedGroup.main_company}
+                />
+                <div className="mt-8">
+                  <TravelManagerForm groupId={selectedGroup.id} />
+                </div>
+              </>
+            )}
+
+            {activeTab !== "Geral" && (
+              <div className="text-gray-500 italic">
+                Conteúdo da aba "{activeTab}" em construção...
+              </div>
+            )}
+          </div>
         </div>
       )}
     </Layout>

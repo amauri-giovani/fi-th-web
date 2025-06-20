@@ -1,13 +1,12 @@
 import { useEffect, useState } from "react";
 import { api } from "../services/api";
 import type { Group } from "../types/company";
+import { useNavigate } from "react-router-dom";
 
-type Props = {
-  onSelect: (group: Group) => void;
-};
 
 export function GroupList({ onSelect }: Props) {
   const [groups, setGroups] = useState<Group[]>([]);
+  const navigate = useNavigate();
 
   useEffect(() => {
     api
@@ -29,7 +28,7 @@ export function GroupList({ onSelect }: Props) {
         {groups.map((group) => (
           <button
             key={group.id}
-            onClick={() => onSelect(group)}
+            onClick={() => navigate(`/companies/groups/${group.id}`)}
             className="bg-white border border-gray-200 shadow-sm rounded-lg p-4 text-left hover:shadow-md transition"
           >
             <h3 className="text-lg font-medium text-primary mb-1">{group.name}</h3>

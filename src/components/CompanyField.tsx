@@ -15,6 +15,8 @@ const placeholders: Partial<Record<keyof Company, string>> = {
   name: 'Razão Social',
   fantasy_name: 'Nome Fantasia',
   cnpj: '00.000.000/0001-91',
+  go_live: '01/01/1111',
+  point_of_sale: 'Ponto de Venda',
   full_address: 'Rua Exemplo, 123 - Bairro - Cidade/UF',
   segment: 'Ex: Saúde, Educação, Indústria',
   benner_code: 'Código no sistema Benner',

@@ -3,7 +3,6 @@ import { api } from '../services/api';
 import type { CompanyContact } from '../types/company';
 import { ContactField } from './ContactField';
 
-
 type Props = {
   contact?: CompanyContact;
   companyId: number;
@@ -12,8 +11,8 @@ type Props = {
 };
 
 export function TravelManagerForm({ contact, companyId, onUpdate, onClose }: Props) {
-  const [editMode, setEditMode] = useState(contact ? false : true);
-  const [form, setForm] = useState<CompanyContact>(
+  const [editMode, setEditMode] = useState(() => (contact ? false : true));
+  const [form, setForm] = useState<CompanyContact>(() =>
     contact ?? {
       id: 0,
       name: '',
@@ -36,7 +35,6 @@ export function TravelManagerForm({ contact, companyId, onUpdate, onClose }: Pro
 
   function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
-
     const payload = {
       ...form,
       is_travel_manager: true,
@@ -53,7 +51,7 @@ export function TravelManagerForm({ contact, companyId, onUpdate, onClose }: Pro
       .then(() => {
         setEditMode(false);
         onUpdate();
-        onClose?.(); // fecha o modal se existir
+        onClose?.();
       })
       .catch((err) => console.error("Erro ao salvar contato:", err));
   }
@@ -63,27 +61,43 @@ export function TravelManagerForm({ contact, companyId, onUpdate, onClose }: Pro
       setForm(contact);
       setEditMode(false);
     } else {
-      onClose?.(); // cancelando criação
+      onClose?.();
     }
   }
 
   return (
-    <form onSubmit={handleSubmit} style={{ marginBottom: '1rem' }}>
-      <ContactField label="Nome" name="name" value={form.name} onChange={handleChange} disabled={!editMode} />
-      <ContactField label="Cargo" name="role" value={form.role} onChange={handleChange} disabled={!editMode} />
-      <ContactField label="E-mail" name="email" value={form.email} onChange={handleChange} disabled={!editMode} />
-      <ContactField label="Telefone fixo" name="phone" value={form.phone} onChange={handleChange} disabled={!editMode} />
-      <ContactField label="Celular" name="mobile" value={form.mobile} onChange={handleChange} disabled={!editMode} />
-      <ContactField label="WhatsApp" name="whatsapp" value={form.whatsapp} onChange={handleChange} disabled={!editMode} />
+    <form
+      onSubmit={handleSubmit}
+      className="mb-6 bg-white border border-gray-200 p-4 rounded-lg shadow-sm"
+    >
+      <div className="grid grid-cols-1 md:grid-cols-6 gap-4">
+        <ContactField label="Nome" name="name" value={form.name} onChange={handleChange} disabled={!editMode} />
+        <ContactField label="Cargo" name="role" value={form.role} onChange={handleChange} disabled={!editMode} />
+        <ContactField label="E-mail" name="email" value={form.email} onChange={handleChange} disabled={!editMode} />
+        <ContactField label="Telefone fixo" name="phone" value={form.phone} onChange={handleChange} disabled={!editMode} />
+        <ContactField label="Celular" name="mobile" value={form.mobile} onChange={handleChange} disabled={!editMode} />
+        <ContactField label="WhatsApp" name="whatsapp" value={form.whatsapp} onChange={handleChange} disabled={!editMode} />
+      </div>
 
-      {editMode ? (
-        <>
-          <button type="submit">Salvar</button>
-          <button type="button" onClick={handleCancel}>Cancelar</button>
-        </>
-      ) : (
-        <button type="button" onClick={() => setEditMode(true)}>Editar</button>
-      )}
+      <div className="mt-4 flex gap-2">
+        {editMode ? (
+          <>
+            <button type="submit" className="bg-primary text-white px-4 py-2 rounded hover:bg-primary/90 transition">Salvar</button>
+            <button type="button" onClick={handleCancel} className="border border-gray-300 px-4 py-2 rounded hover:bg-gray-100 transition">Cancelar</button>
+          </>
+        ) : (
+          <button
+            type="button"
+            onClick={(e) => {
+              e.preventDefault();
+              setEditMode(true);
+            }}
+            className="text-primary hover:underline text-sm"
+          >
+            Editar
+          </button>
+        )}
+      </div>
     </form>
   );
 }

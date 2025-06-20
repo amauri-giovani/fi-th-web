@@ -17,6 +17,8 @@ export type Company = {
   obt_link: string;
   website: string;
   notes: string;
+  go_live: string;
+  point_of_sale: string;
   travel_managers: CompanyContact[];
   group: {
     id: number;

@@ -1,151 +1,148 @@
 import { useEffect, useState } from 'react';
 import { api } from '../services/api';
-import type { Company, CompanyContact } from '../types/company';
+import type { Company } from '../types/company';
 import { CompanyField } from './CompanyField';
 import { TravelManagerForm } from './TravelManagerForm';
+import { format, parseISO, parse } from 'date-fns'
 
 
 type Props = {
-    companyId: number;
-    groupId: number;
+	companyId: number;
+	groupId: number;
 };
 
-
 export function CompanyForm({ companyId, groupId }: Props) {
-    const [company, setCompany] = useState<Company | null>(null);
-    const [editMode, setEditMode] = useState(false);
-    const [showTravelModal, setShowTravelModal] = useState(false);
-    const [selectedContact, setSelectedContact] = useState<CompanyContact | null>(null);
+	const [company, setCompany] = useState<Company | null>(null);
+	const [editMode, setEditMode] = useState(false);
+	const [addingNewContact, setAddingNewContact] = useState(false);
 
-    useEffect(() => {
-        api.get<Company>(`companies/companies/${companyId}/`)
-            .then(res => setCompany(res.data))
-            .catch(err => console.error('Erro ao carregar empresa:', err));
-    }, []);
+	useEffect(() => {
+		api.get<Company>(`companies/companies/${companyId}/`)
+			.then(res => setCompany(res.data))
+			.catch(err => console.error('Erro ao carregar empresa:', err));
+	}, []);
 
-    function handleChange(event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) {
-        const { name, value } = event.target;
-        setCompany(prev => prev ? { ...prev, [name]: value } : prev);
-    }
+	function dateToString(isoDate: string) {
+		return format(parseISO(isoDate), 'dd/MM/yyyy')
+	}
 
-    function handleSubmit(event: React.FormEvent) {
-        event.preventDefault();
-        if (!company) return;
+	function stringToDate(dateBr: string): string {
+		const parsed = parse(dateBr, 'dd/MM/yyyy', new Date())
+		return format(parsed, 'yyyy-MM-dd')
+	}
 
-        api.put(`companies/companies/${company.id}/`, { ...company, group_id: groupId })
-            .then(() => setEditMode(false))
-            .catch(err => console.error('Erro ao salvar empresa:', err));
-    }
+	function handleChange(event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) {
+		const { name, value } = event.target;
+		setCompany(prev => prev ? { ...prev, [name]: value } : prev);
+	}
 
-    function enableEditing(event: React.FormEvent) {
-        event.preventDefault();
-        setEditMode(true);
-    }
+	function handleSubmit(event: React.FormEvent) {
+		event.preventDefault();
+		if (!company) return;
 
-    function handleCancel() {
-        api.get<Company>(`companies/companies/${companyId}/`)
-            .then(res => {
-                setCompany(res.data);
-                setEditMode(false);
-            })
-            .catch(err => console.error('Erro ao cancelar edição:', err));
-    }
+		api.put(`companies/companies/${company.id}/`, { ...company, group_id: groupId })
+			.then(() => setEditMode(false))
+			.catch(err => console.error('Erro ao salvar empresa:', err));
+	}
 
-    function handleSubmitTravelManager(e: React.FormEvent<HTMLFormElement>) {
-        e.preventDefault();
-        const form = e.currentTarget;
-        const data = new FormData(form);
+	function enableEditing(event: React.FormEvent) {
+		event.preventDefault();
+		setEditMode(true);
+	}
 
-        const payload = {
-            name: data.get("name"),
-            role: data.get("role"),
-            phone: data.get("phone"),
-            mobile: data.get("mobile"),
-            whatsapp: data.get("whatsapp"),
-            email: data.get("email"),
-            is_travel_manager: true,
-            company: company?.id,
-        };
+	function handleCancel() {
+		api.get<Company>(`companies/companies/${companyId}/`)
+			.then(res => {
+				setCompany(res.data);
+				setEditMode(false);
+			})
+			.catch(err => console.error('Erro ao cancelar edição:', err));
+	}
 
-        const endpoint = selectedContact
-            ? `companies/company-contacts/${selectedContact.id}/`
-            : "companies/company-contacts/";
+	if (!company) return <p>Carregando...</p>;
 
-        const method = selectedContact ? api.put : api.post;
+	return (
+		<>
+			<form onSubmit={handleSubmit}>
+				<h2 className="text-lg font-semibold text-gray-800 mb-4">Informações Gerais</h2>
 
-        method(endpoint, payload)
-            .then(() => {
-                setShowTravelModal(false);
-                setSelectedContact(null);
-                return api.get<Company>(`companies/companies/${companyId}/`);
-            })
-            .then(res => setCompany(res.data))
-            .catch(err => console.error("Erro ao salvar contato:", err));
-    }
+				<div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+					<CompanyField label="Razão Social" name="name" value={company.name} onChange={handleChange} disabled={!editMode} />
+					<CompanyField label="Nome Fantasia" name="fantasy_name" value={company.fantasy_name} onChange={handleChange} disabled={!editMode} />
+					<CompanyField label="CNPJ" name="cnpj" value={company.cnpj} onChange={handleChange} disabled={!editMode} />
+					<CompanyField label="Ponto de Venda" name="point_of_sale" value={company.point_of_sale.name} disabled={!editMode} />
+					<CompanyField label="Código Benner" name="benner_code" value={company.benner_code} onChange={handleChange} disabled={!editMode} />
+					<CompanyField label="Go Live" name="go_live" value={dateToString(company.go_live)} disabled={!editMode} />
+					<CompanyField label="Segmento" name="segment" value={company.segment} onChange={handleChange} disabled={!editMode} />
+					<CompanyField label="Link do OBT" name="obt_link" value={company.obt_link} onChange={handleChange} disabled={!editMode} />
+					<CompanyField label="Site" name="website" value={company.website || ''} onChange={handleChange} disabled={!editMode} />
+					<div className="lg:col-span-3 md:col-span-2 col-span-1">
+						<CompanyField label="Endereço Completo" name="full_address" value={company.full_address} onChange={handleChange} disabled={!editMode} />
+					</div>
+					<div className="lg:col-span-3 md:col-span-2 col-span-1">
+						<CompanyField label="Observações" name="notes" value={company.notes || ''} onChange={handleChange} disabled={!editMode} multiline />
+					</div>
+				</div>
 
-    if (!company) return <p>Carregando...</p>;
+				<div className="mt-6 flex gap-4">
+					{editMode ? (
+						<>
+							<button type="submit" className="bg-primary text-white px-4 py-2 rounded hover:bg-primary/90 transition">Salvar</button>
+							<button type="button" onClick={handleCancel} className="border border-gray-300 px-4 py-2 rounded hover:bg-gray-100 transition">Cancelar</button>
+						</>
+					) : (
+						<button type="button" onClick={enableEditing} className="bg-primary text-white px-4 py-2 rounded hover:bg-primary/90 transition">Editar</button>
+					)}
+				</div>
+			</form>
 
-    return (
-        <>
-            <form onSubmit={handleSubmit}>
-                <h2>Cadastro do Cliente</h2>
+			{/* Seção de gestores de viagem */}
+			<div className="mt-12 bg-white border border-gray-200 rounded-lg p-6 shadow-sm">
+				<h3 className="text-md font-semibold text-gray-800 mb-4">Gestores de Viagem</h3>
 
-                <CompanyField label="Razão Social" name="name" value={company.name} onChange={handleChange} disabled={!editMode} />
-                <CompanyField label="Nome Fantasia" name="fantasy_name" value={company.fantasy_name} onChange={handleChange} disabled={!editMode} />
-                <CompanyField label="CNPJ" name="cnpj" value={company.cnpj} onChange={handleChange} disabled={!editMode} />
-                <CompanyField label="Endereço Completo" name="full_address" value={company.full_address} onChange={handleChange} disabled={!editMode} />
-                <CompanyField label="Segmento" name="segment" value={company.segment} onChange={handleChange} disabled={!editMode} />
-                <CompanyField label="Código Benner" name="benner_code" value={company.benner_code} onChange={handleChange} disabled={!editMode} />
-                <CompanyField label="Link do OBT" name="obt_link" value={company.obt_link} onChange={handleChange} disabled={!editMode} />
-                <CompanyField label="Site" name="website" value={company.website || ''} onChange={handleChange} disabled={!editMode} />
-                <CompanyField label="Observações" name="notes" value={company.notes || ''} onChange={handleChange} disabled={!editMode} multiline />
+				<div className="space-y-4">
+					{company.travel_managers.length > 0 ? (
+						company.travel_managers.map((contact) => (
+							<TravelManagerForm
+								key={contact.id}
+								contact={contact}
+								companyId={company.id}
+								onUpdate={() =>
+									api.get<Company>(`companies/companies/${companyId}/`).then(res => setCompany(res.data))
+								}
+							/>
+						))
+					) : (
+						<p className="text-sm text-gray-500 italic">Nenhum gestor de viagem cadastrado.</p>
+					)}
 
-                <div style={{ marginTop: '1rem' }}>
-                    {editMode ? (
-                        <>
-                            <button type="submit">Salvar</button>
-                            <button type="button" onClick={handleCancel}>Cancelar</button>
-                        </>
-                    ) : (
-                        <button type="button" onClick={enableEditing}>Editar</button>
-                    )}
-                </div>
-            </form>
+					{/* Novo gestor inline controlado por state */}
+					{addingNewContact && (
+						<TravelManagerForm
+							companyId={company.id}
+							onUpdate={() =>
+								api.get<Company>(`companies/companies/${companyId}/`).then(res => {
+									setCompany(res.data);
+									setAddingNewContact(false);
+								})
+							}
+							onClose={() => setAddingNewContact(false)}
+						/>
+					)}
+				</div>
 
-            <div style={{ marginTop: '2rem' }}>
-                <h3>Gestores de Viagem</h3>
-
-                {company.travel_managers.length > 0 ? (
-                    company.travel_managers.map((contact) => (
-                        <TravelManagerForm
-                            key={contact.id}
-                            contact={contact}
-                            companyId={company.id}
-                            onUpdate={() =>
-                                api.get<Company>(`companies/companies/${companyId}/`)
-                                    .then(res => setCompany(res.data))
-                            }
-                        />
-                    ))
-                ) : (
-                    <p>Nenhum gestor de viagem cadastrado.</p>
-                )}
-
-                <button type="button" onClick={() => setShowTravelModal(true)}>
-                    Novo gestor de viagem
-                </button>
-            </div>
-
-            {showTravelModal && (
-                <div style={{ background: '#00000088', padding: '1rem' }}>
-                    <h4>Novo Gestor de Viagem</h4>
-                    <TravelManagerForm
-                        companyId={company.id}
-                        onUpdate={() => api.get<Company>(`companies/companies/${companyId}/`).then(res => setCompany(res.data))}
-                        onClose={() => setShowTravelModal(false)}
-                    />
-                </div>
-            )}
-        </>
-    );
+				{!addingNewContact && (
+					<div className="mt-6">
+						<button
+							type="button"
+							onClick={() => setAddingNewContact(true)}
+							className="bg-purple-800 text-white px-6 py-2 rounded-full hover:bg-purple-900 transition"
+						>
+							Novo gestor de viagem
+						</button>
+					</div>
+				)}
+			</div>
+		</>
+	);
 }
