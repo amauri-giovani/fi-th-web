@@ -3,12 +3,11 @@ import { api } from '../services/api';
 import type { Company, CompanyContact } from '../types/company';
 import { CompanyField } from './CompanyField';
 import { TravelManagerForm } from './TravelManagerForm';
-import { ContactField } from './ContactField';
 
 
 type Props = {
-  companyId: number;
-  groupId: number;
+    companyId: number;
+    groupId: number;
 };
 
 
@@ -33,7 +32,7 @@ export function CompanyForm({ companyId, groupId }: Props) {
         event.preventDefault();
         if (!company) return;
 
-        api.put(`companies/companies/${company.id}/`, {...company, group_id: groupId})
+        api.put(`companies/companies/${company.id}/`, { ...company, group_id: groupId })
             .then(() => setEditMode(false))
             .catch(err => console.error('Erro ao salvar empresa:', err));
     }
@@ -140,55 +139,11 @@ export function CompanyForm({ companyId, groupId }: Props) {
             {showTravelModal && (
                 <div style={{ background: '#00000088', padding: '1rem' }}>
                     <h4>Novo Gestor de Viagem</h4>
-                    <form onSubmit={handleSubmitTravelManager}>
-                        <ContactField
-                            label="Nome"
-                            name="name"
-                            value={selectedContact?.name || ''}
-                            onChange={() => { }} // o modal não precisa controlar o valor em tempo real
-                            disabled={false}
-                        />
-                        <ContactField
-                            label="Cargo"
-                            name="role"
-                            value={selectedContact?.role || ''}
-                            onChange={() => { }}
-                            disabled={false}
-                        />
-                        <ContactField
-                            label="Telefone fixo"
-                            name="phone"
-                            value={selectedContact?.phone || ''}
-                            onChange={() => { }}
-                            disabled={false}
-                        />
-                        <ContactField
-                            label="Celular"
-                            name="mobile"
-                            value={selectedContact?.mobile || ''}
-                            onChange={() => { }}
-                            disabled={false}
-                        />
-                        <ContactField
-                            label="WhatsApp"
-                            name="whatsapp"
-                            value={selectedContact?.whatsapp || ''}
-                            onChange={() => { }}
-                            disabled={false}
-                        />
-                        <ContactField
-                            label="E-mail"
-                            name="email"
-                            value={selectedContact?.email || ''}
-                            onChange={() => { }}
-                            disabled={false}
-                        />
-
-                        <div style={{ marginTop: '1rem' }}>
-                            <button type="submit">Salvar</button>
-                            <button type="button" onClick={() => setShowTravelModal(false)}>Cancelar</button>
-                        </div>
-                    </form>
+                    <TravelManagerForm
+                        companyId={company.id}
+                        onUpdate={() => api.get<Company>(`companies/companies/${companyId}/`).then(res => setCompany(res.data))}
+                        onClose={() => setShowTravelModal(false)}
+                    />
                 </div>
             )}
         </>
