@@ -13,7 +13,7 @@ export type PointOfSale = {
 };
 
 export type Company = {
-  id: number;
+  id?: number;
   name: string;
   fantasy_name: string;
   cnpj: string;
@@ -24,7 +24,7 @@ export type Company = {
   website: string;
   notes: string;
   go_live: string;
-  point_of_sale: PointOfSale;
+  point_of_sale: PointOfSale | null;
   travel_managers: CompanyContact[];
   group: {
     id: number;

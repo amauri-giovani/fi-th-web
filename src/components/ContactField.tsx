@@ -1,5 +1,5 @@
 import type { CompanyContact } from '../types/company';
-import { MaskedInput } from './MaskedInput';
+import { MaskedInput } from './base/MaskedInput';
 
 
 type Props = {

@@ -1,6 +1,6 @@
 import { useState } from "react";
-import Input from "@/components/Input";
-import Button from "@/components/Button";
+import Input from "@/components/base/Input";
+import Button from "@/components/base/Button";
 import { createGroup } from "@/services/groupService";
 import { toast } from "react-toastify";
 

@@ -20,6 +20,7 @@ export function MaskedInput({ name, value, onChange, disabled }: Props) {
     phone: '(##) ####-####',
     mobile: '(##) #####-####',
     whatsapp: '(##) #####-####',
+    go_live: '##/##/####',
   };
 
   const format = formatMap[name];
