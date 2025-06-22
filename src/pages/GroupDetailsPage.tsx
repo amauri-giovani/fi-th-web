@@ -1,10 +1,8 @@
 import { useParams } from "react-router-dom";
 import { useEffect, useState } from "react";
-import { Layout } from "@/components/layout/Layout";
 import { GroupTabs } from "@/components/layout/GroupTabs";
-import { CompanyForm } from "@/components/CompanyForm";
-import { TravelManagerForm } from "@/components/TravelManagerForm";
-import { api } from "@/services/api"; // ou seu client http
+import { GroupGeneralTab } from "@/components/groups/GroupGeneralTab";
+import { fetchGroupById } from "@/services/groupService";
 import type { Group } from "@/types/company";
 
 
@@ -23,52 +21,56 @@ export function GroupDetailsPage() {
   const { id } = useParams();
   const [activeTab, setActiveTab] = useState("Geral");
   const [group, setGroup] = useState<Group | null>(null);
+  const [notFound, setNotFound] = useState(false);
 
   useEffect(() => {
-    if (id) {
-      api
-        .get(`/companies/groups/${id}/`)
-        .then((res) => setGroup(res.data))
-        .catch((err) => console.error("Erro ao buscar grupo", err));
-    }
+    fetchGroupById(Number(id))
+      .then((data) => {
+        setGroup(data);
+        setNotFound(false);
+      })
+      .catch((err) => {
+        if (err.response?.status === 404) {
+          setNotFound(true);
+        } else {
+          console.error("Erro ao carregar grupo:", err);
+        }
+      });
   }, [id]);
+
+  if (notFound) {
+    return (
+      <div className="text-center text-red-600 mt-8">
+        Grupo não encontrado.
+      </div>
+    );
+  }
 
   if (!group) {
     return (
-      <Layout>
-        <div className="p-6 text-gray-600 italic">Carregando grupo...</div>
-      </Layout>
+      <div className="p-6 text-gray-600 italic">Carregando grupo...</div>
     );
   }
 
   return (
-    <Layout>
-      <div className="p-6">
-        <h1 className="text-2xl font-bold text-primary mb-6">
-          Grupo {group.name}
-        </h1>
+    <div className="p-6">
+      <h1 className="text-2xl font-bold text-primary mb-6">
+        Grupo {group.name}
+      </h1>
 
-        <GroupTabs tabs={TABS} active={activeTab} onChange={setActiveTab} />
+      <GroupTabs tabs={TABS} active={activeTab} onChange={setActiveTab} />
 
-        <div className="mt-8">
-          {activeTab === "Geral" && (
-            <>
-              <CompanyForm
-                groupId={group.id}
-                companyId={group.main_company}
-              />
-              <div className="mt-8">
-                <TravelManagerForm groupId={group.id} />
-              </div>
-            </>
-          )}
-          {activeTab !== "Geral" && (
-            <div className="text-gray-500 italic">
-              Conteúdo da aba "{activeTab}" em construção...
-            </div>
-          )}
-        </div>
+      <div className="mt-8">
+        {activeTab === "Geral" && (
+          <GroupGeneralTab group={group} />
+        )}
+
+        {activeTab !== "Geral" && (
+          <div className="text-gray-500 italic">
+            Conteúdo da aba "{activeTab}" em construção...
+          </div>
+        )}
       </div>
-    </Layout>
+    </div>
   );
 }

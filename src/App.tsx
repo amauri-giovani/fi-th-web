@@ -1,16 +1,23 @@
 import { Routes, Route } from "react-router-dom";
 import { HomePage } from "./pages/HomePage";
-import { CompanyGroupsPage } from "./pages/CompanyGroupsPage";
 import { PosPage } from "./pages/PosPage";
+import { GroupSelectorPage } from "./pages/GroupSelectorPage";
 import { GroupDetailsPage } from "./pages/GroupDetailsPage";
+import { Layout } from "./components/layout/Layout";
+import { ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
+
 
 export function App() {
   return (
-    <Routes>
-      <Route path="/" element={<HomePage />} />
-      <Route path="/companies/groups" element={<CompanyGroupsPage />} />
-      <Route path="/companies/groups/:id" element={<GroupDetailsPage />} />
-      <Route path="/pos" element={<PosPage />} />
-    </Routes>
+    <Layout>
+      <Routes>
+        <Route path="/" element={<HomePage />} />
+        <Route path="/companies/groups" element={<GroupSelectorPage />} />
+        <Route path="/companies/groups/:id" element={<GroupDetailsPage />} />
+        <Route path="/pos" element={<PosPage />} />
+      </Routes>
+      <ToastContainer position="top-right" autoClose={3000} />
+    </Layout>
   );
 }

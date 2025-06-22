@@ -6,6 +6,12 @@ export type Group = {
   main_company_name: string | null;
 };
 
+export type PointOfSale = {
+  id: number;
+  name: string;
+  slug: string;
+};
+
 export type Company = {
   id: number;
   name: string;
@@ -18,7 +24,7 @@ export type Company = {
   website: string;
   notes: string;
   go_live: string;
-  point_of_sale: string;
+  point_of_sale: PointOfSale;
   travel_managers: CompanyContact[];
   group: {
     id: number;

@@ -71,6 +71,7 @@ export function CompanyForm({ companyId, groupId }: Props) {
 					<CompanyField label="Nome Fantasia" name="fantasy_name" value={company.fantasy_name} onChange={handleChange} disabled={!editMode} />
 					<CompanyField label="CNPJ" name="cnpj" value={company.cnpj} onChange={handleChange} disabled={!editMode} />
 					<CompanyField label="Ponto de Venda" name="point_of_sale" value={company.point_of_sale.name} disabled={!editMode} />
+					{/* <EntitySelectField label="Ponto de Venda" field="point_of_sale" value={company.point_of_sale?.id ?? null} onChangeEntity={setCompany} disabled={!editMode} /> */}
 					<CompanyField label="Código Benner" name="benner_code" value={company.benner_code} onChange={handleChange} disabled={!editMode} />
 					<CompanyField label="Go Live" name="go_live" value={dateToString(company.go_live)} disabled={!editMode} />
 					<CompanyField label="Segmento" name="segment" value={company.segment} onChange={handleChange} disabled={!editMode} />

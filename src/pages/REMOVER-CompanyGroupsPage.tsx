@@ -1,10 +1,11 @@
 import { useState } from "react";
-import { GroupList } from "../components/GroupList";
+import { GroupList } from "@/components/groups/GroupList";
 import { CompanyForm } from "../components/CompanyForm";
 import { TravelManagerForm } from "../components/TravelManagerForm";
 import { Layout } from "@/components/layout/Layout";
 import { GroupTabs } from "@/components/layout/GroupTabs";
 import type { Group } from "../types/company";
+
 
 const TABS = [
   "Geral",
