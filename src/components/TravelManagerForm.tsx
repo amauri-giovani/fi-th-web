@@ -2,6 +2,8 @@ import { useState } from 'react';
 import { api } from '../services/api';
 import type { CompanyContact } from '../types/company';
 import { ContactField } from './ContactField';
+import Button from './base/Button';
+
 
 type Props = {
   contact?: CompanyContact;
@@ -21,7 +23,7 @@ export function TravelManagerForm({ contact, companyId, onUpdate, onClose }: Pro
       mobile: '',
       whatsapp: '',
       email: '',
-      is_travel_manager: true,
+      is_travel_manager: false,
       is_account_executive: false,
       is_billing_contact: false,
       company: companyId,
@@ -66,10 +68,7 @@ export function TravelManagerForm({ contact, companyId, onUpdate, onClose }: Pro
   }
 
   return (
-    <form
-      onSubmit={handleSubmit}
-      className="mb-6 bg-white border border-gray-200 p-4 rounded-lg shadow-sm"
-    >
+    <form onSubmit={handleSubmit} className="mb-6 bg-white border border-gray-200 p-4 rounded-lg shadow-sm">
       <div className="grid grid-cols-1 md:grid-cols-6 gap-4">
         <ContactField label="Nome" name="name" value={form.name} onChange={handleChange} disabled={!editMode} />
         <ContactField label="Cargo" name="role" value={form.role} onChange={handleChange} disabled={!editMode} />
@@ -82,20 +81,11 @@ export function TravelManagerForm({ contact, companyId, onUpdate, onClose }: Pro
       <div className="mt-4 flex gap-2">
         {editMode ? (
           <>
-            <button type="submit" className="bg-primary text-white px-4 py-2 rounded hover:bg-primary/90 transition">Salvar</button>
-            <button type="button" onClick={handleCancel} className="border border-gray-300 px-4 py-2 rounded hover:bg-gray-100 transition">Cancelar</button>
+            <Button type="submit">Salvar</Button>
+            <Button variant="outline" onClick={handleCancel}>Cancelar</Button>
           </>
         ) : (
-          <button
-            type="button"
-            onClick={(e) => {
-              e.preventDefault();
-              setEditMode(true);
-            }}
-            className="text-primary hover:underline text-sm"
-          >
-            Editar
-          </button>
+          <Button onClick={(e) => { e.preventDefault(); setEditMode(true); }}>Editar</Button>
         )}
       </div>
     </form>

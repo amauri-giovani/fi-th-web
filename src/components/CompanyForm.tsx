@@ -6,6 +6,7 @@ import { TravelManagerForm } from './TravelManagerForm';
 import { format, parseISO, parse } from 'date-fns';
 import SmartSelectField from './base/SmartSelectField';
 import { MaskedInput } from './base/MaskedInput';
+import Button from './base/Button';
 
 
 type Props = {
@@ -63,18 +64,21 @@ export function CompanyForm({ companyId, groupId, onCancelCreate }: Props) {
 	}
 
 	function stringToDate(dateBr: string): string {
-		console.log("dateBr =", dateBr)
-		if (!dateBr || dateBr.trim() === '') {
-			return ''; // ou null, dependendo do que a API aceita
+		console.log("dateBr =", dateBr);
+		if (!dateBr || dateBr.trim() === '') return '';
+
+		let parsed;
+
+		if (/^\d{8}$/.test(dateBr)) {
+			const day = dateBr.slice(0, 2);
+			const month = dateBr.slice(2, 4);
+			const year = dateBr.slice(4, 8);
+			parsed = new Date(`${year}-${month}-${day}`);
+		} else {
+			parsed = parse(dateBr, 'dd/MM/yyyy', new Date());
 		}
 
-		const parsed = parse(dateBr, 'dd/MM/yyyy', new Date());
-		console.log("parsed_dateBr =", parsed)
-
-		// Verifica se a data é válida antes de formatar
-		if (isNaN(parsed.getTime())) {
-			return '';
-		}
+		if (isNaN(parsed.getTime())) return '';
 
 		return format(parsed, 'yyyy-MM-dd');
 	}
@@ -105,8 +109,28 @@ export function CompanyForm({ companyId, groupId, onCancelCreate }: Props) {
 
 		request
 			.then((res) => {
-				setCompany(res.data);
+				// setCompany(res.data);
+				const novaEmpresa = res.data;
+				setCompany(novaEmpresa);
 				setEditMode(false);
+
+				if (!companyId) {
+					api.get(`/companies/groups/${groupId}/`).then((groupRes) => {
+						if (!groupRes.data.main_company) {
+							const confirmar = window.confirm("Deseja definir esta empresa como principal do grupo?");
+							if (confirmar) {
+								api
+									.patch(`/companies/groups/${groupId}/`, { main_company: novaEmpresa.id })
+									.then(() => {
+										console.log("Empresa definida como principal com sucesso");
+									})
+									.catch((err) => {
+										console.error("Erro ao definir empresa como principal:", err);
+									});
+							}
+						}
+					});
+				}
 			})
 			.catch((err) => {
 				console.error('Erro ao salvar empresa:', err);
@@ -177,28 +201,41 @@ export function CompanyForm({ companyId, groupId, onCancelCreate }: Props) {
 				<div className="mt-6 flex gap-4">
 					{editMode ? (
 						<>
-							<button type="submit" className="bg-primary text-white px-4 py-2 rounded hover:bg-primary/90 transition">Salvar</button>
-							<button type="button" onClick={handleCancel} className="border border-gray-300 px-4 py-2 rounded hover:bg-gray-100 transition">Cancelar</button>
+							<Button type="submit">Salvar</Button>
+							<Button variant="outline" onClick={handleCancel}>Cancelar</Button>
 						</>
 					) : (
-						<button
-							type="button"
-							onClick={(e) => {
-								e.preventDefault();
-								setEditMode(true);
-							}}
-							className="bg-primary text-white px-4 py-2 rounded hover:bg-primary/90 transition"
-						>
-							Editar
-						</button>
+						<>
+							<Button onClick={(e) => { e.preventDefault(); setEditMode(true); }}>Editar</Button>
+						</>
 					)}
 				</div>
 			</form>
 
 			{company.id && (
 				<div className="mt-12 bg-white border border-gray-200 rounded-lg p-6 shadow-sm">
-					<h3 className="text-md font-semibold text-gray-800 mb-4">Gestores de Viagem</h3>
+
+					<div className="flex justify-between items-center mb-4">
+						<h3 className="text-md font-semibold text-gray-800">Gestores de Viagem</h3>
+						{!addingNewContact && company.id && (
+							<Button onClick={() => setAddingNewContact(true)}>Novo gestor de viagem</Button>
+						)}
+					</div>
+
 					<div className="space-y-4">
+						{addingNewContact && (
+							<TravelManagerForm
+								companyId={company.id!}
+								onUpdate={() =>
+									api.get<Company>(`companies/companies/${company.id}/`).then((res) => {
+										setCompany(res.data);
+										setAddingNewContact(false);
+									})
+								}
+								onClose={() => setAddingNewContact(false)}
+							/>
+						)}
+
 						{company.travel_managers.length > 0 ? (
 							company.travel_managers.map((contact) => (
 								<TravelManagerForm
@@ -213,32 +250,7 @@ export function CompanyForm({ companyId, groupId, onCancelCreate }: Props) {
 						) : (
 							<p className="text-sm text-gray-500 italic">Nenhum gestor de viagem cadastrado.</p>
 						)}
-
-						{addingNewContact && (
-							<TravelManagerForm
-								companyId={company.id!}
-								onUpdate={() =>
-									api.get<Company>(`companies/companies/${company.id}/`).then((res) => {
-										setCompany(res.data);
-										setAddingNewContact(false);
-									})
-								}
-								onClose={() => setAddingNewContact(false)}
-							/>
-						)}
 					</div>
-
-					{!addingNewContact && company.id && (
-						<div className="mt-6">
-							<button
-								type="button"
-								onClick={() => setAddingNewContact(true)}
-								className="bg-purple-800 text-white px-6 py-2 rounded-full hover:bg-purple-900 transition"
-							>
-								Novo gestor de viagem
-							</button>
-						</div>
-					)}
 				</div>
 			)}
 		</>

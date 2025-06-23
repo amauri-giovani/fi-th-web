@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { api } from "@/services/api";
 import { CompanyForm } from "../CompanyForm";
 import type { Company, Group } from "@/types/company";
-import { useNavigate } from "react-router-dom";
+import Button from "../base/Button";
 
 
 type Props = {
@@ -11,7 +11,7 @@ type Props = {
 
 export function GroupGeneralTab({ group }: Props) {
   const [companies, setCompanies] = useState<Company[]>([]);
-  const navigate = useNavigate();
+  const [creatingCompany, setCreatingCompany] = useState(false);
 
   const fetchCompanies = () => {
     api
@@ -28,29 +28,35 @@ export function GroupGeneralTab({ group }: Props) {
   const hasMainCompany = Boolean(group.main_company);
 
   return (
-    <div>
-      <div className="mb-6">
-        {!hasCompanies ? (
+    <div className="mb-6">
+      {!hasCompanies ? (
+        <>
           <p className="text-sm text-gray-500 italic">
             Esse grupo ainda não possui empresas cadastradas. Crie uma empresa e atribua como principal.
           </p>
-        ) : !hasMainCompany ? (
-          <p className="text-sm text-gray-500 italic">
-            Esse grupo possui empresas, mas nenhuma definida como principal. Selecione uma para atribuir.
-          </p>
-        ) : (
-          <CompanyForm groupId={group.id} companyId={group.main_company} />
-        )}
-      </div>
 
-      <div className="mt-8">
-        <button
-          onClick={() => navigate(`/companies/create?group=${group.id}`)}
-          className="bg-primary text-white px-4 py-2 rounded hover:bg-primary/90 transition"
-        >
-          Criar empresa
-        </button>
-      </div>
+          {creatingCompany ? (
+            <div className="mt-4">
+              <CompanyForm
+                groupId={group.id}
+                onCancelCreate={() => setCreatingCompany(false)}
+              />
+            </div>
+          ) : (
+            <div className="mt-4">
+              <Button variant="primary" onClick={() => setCreatingCompany(true)}>
+                Criar empresa
+              </Button>
+            </div>
+          )}
+        </>
+      ) : !hasMainCompany ? (
+        <p className="text-sm text-gray-500 italic">
+          Esse grupo possui empresas, mas nenhuma definida como principal. Selecione uma para atribuir.
+        </p>
+      ) : (
+        <CompanyForm groupId={group.id} companyId={group.main_company ?? undefined} />
+      )}
     </div>
   );
 }
