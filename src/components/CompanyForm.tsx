@@ -8,13 +8,14 @@ import SmartSelectField from './base/SmartSelectField';
 import { MaskedInput } from './base/MaskedInput';
 import Button from './base/Button';
 import ConfirmModal from './base/ConfirmModal';
+import { toast } from "react-toastify";
 
 
 type Props = {
 	companyId?: number;
 	groupId: number;
 	onCancelCreate?: () => void;
-	onSuccess?: () => void;
+	onSuccess?: (company: Company) => void;
 };
 
 export function CompanyForm({ companyId, groupId, onCancelCreate, onSuccess }: Props) {
@@ -46,7 +47,7 @@ export function CompanyForm({ companyId, groupId, onCancelCreate, onSuccess }: P
 	const [editMode, setEditMode] = useState(companyId ? false : true);
 	const [addingNewContact, setAddingNewContact] = useState(false);
 	const [showConfirmModal, setShowConfirmModal] = useState(false);
-	const [novaEmpresaId, setNovaEmpresaId] = useState<number | null>(null);
+	const [newCompanyId, setnewCompanyId] = useState<number | null>(null);
 
 	useEffect(() => {
 		if (!companyId) return;
@@ -108,49 +109,40 @@ export function CompanyForm({ companyId, groupId, onCancelCreate, onSuccess }: P
 
 		request
 			.then((res) => {
-				const novaEmpresa = res.data;
-				setCompany(novaEmpresa);
+				const newCompany = res.data;
+				setCompany(newCompany);
 				setEditMode(false);
-
-				if (onSuccess) onSuccess();
+				if (onSuccess) onSuccess(newCompany);
 
 				if (!companyId) {
 					api.get(`/companies/groups/${groupId}/`).then((groupRes) => {
 						if (!groupRes.data.main_company) {
-							const confirmar = window.confirm("Deseja definir esta empresa como principal do grupo?");
-							if (confirmar) {
-								api
-									.patch(`/companies/groups/${groupId}/`, { main_company: novaEmpresa.id })
-									.then(() => {
-										console.log("Empresa definida como principal com sucesso");
-										if (onSuccess) onSuccess(); // Força recarregar a lista com destaque em verde
-									})
-									.catch((err) => {
-										console.error("Erro ao definir empresa como principal:", err);
-									});
-							}
+							setnewCompanyId(newCompany.id);
+							setShowConfirmModal(true);
 						}
 					});
 				}
 			})
 			.catch((err) => {
-				console.error('Erro ao salvar empresa:', err);
-				// Aqui você pode fazer um toast ou alert amigável
+				const msg = err.response?.data?.detail || "Erro ao salvar empresa. Tente novamente.";
+				toast.error(msg);
 			});
 	}
 
 	function handleSetAsMainCompany() {
-		if (!novaEmpresaId) return;
+		if (!newCompanyId) return;
 		api
-			.patch(`/companies/groups/${groupId}/`, { main_company: novaEmpresaId })
+			.patch(`/companies/groups/${groupId}/`, { main_company: newCompanyId })
 			.then(() => {
 				console.log("Empresa definida como principal com sucesso");
+				toast.success("Empresa definida como principal com sucesso");
 			})
 			.catch((err) => {
 				console.error("Erro ao definir empresa como principal:", err);
+				toast.error("Erro ao definir empresa como principal:");
 			})
 			.finally(() => {
-				setNovaEmpresaId(null);
+				setnewCompanyId(null);
 				setShowConfirmModal(false);
 			});
 	}

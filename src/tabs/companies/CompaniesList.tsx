@@ -22,14 +22,11 @@ export default function CompaniesList({
 }: Props) {
   const main = companies.find((c) => c.id === mainCompanyId);
   const others = companies.filter((c) => c.id !== mainCompanyId);
-
   const [modalCompany, setModalCompany] = useState<Company | null>(null);
 
   const handleSetAsMain = () => {
     console.log("Chamando API para tornar principal:", modalCompany);
     if (!modalCompany) return;
-    console.log("modalCompany.id =", modalCompany.id)
-    console.log("modalCompany.group.id =", modalCompany.group.id)
 
     if (modalCompany.id === mainCompanyId) {
       console.log("Empresa já é a principal, nada a fazer.");

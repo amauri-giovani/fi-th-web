@@ -5,6 +5,7 @@ import { CompanyForm } from "@/components/CompanyForm";
 import CompaniesList from "./CompaniesList";
 import Button from "@/components/base/Button";
 import { Undo2 } from "lucide-react";
+import { toast } from "react-toastify";
 
 type Props = {
   group: Group;
@@ -89,9 +90,9 @@ export default function CompaniesTab({ group }: Props) {
                 fetchCompanies();
                 setCreatingNew(false);
                 setSelectedCompany(null);
+                toast.success("Empresa criada com sucesso!");
               });
             }}
-
           />
 
         </div>

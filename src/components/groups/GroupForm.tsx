@@ -27,8 +27,7 @@ export default function GroupForm({ onCancel, onSuccess }: Props) {
     } catch (err: any) {
       const msg = err.response?.data?.detail || "Erro ao criar grupo. Tente novamente.";
       console.error("Erro ao criar grupo:", err);
-      toast.error(msg); // ❌ erro
-      // setName("");
+      toast.error(msg);
       setHasError(true);
     } finally {
       setLoading(false);
