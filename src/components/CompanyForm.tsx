@@ -7,15 +7,17 @@ import { format, parseISO, parse } from 'date-fns';
 import SmartSelectField from './base/SmartSelectField';
 import { MaskedInput } from './base/MaskedInput';
 import Button from './base/Button';
+import ConfirmModal from './base/ConfirmModal';
 
 
 type Props = {
 	companyId?: number;
 	groupId: number;
 	onCancelCreate?: () => void;
+	onSuccess?: () => void;
 };
 
-export function CompanyForm({ companyId, groupId, onCancelCreate }: Props) {
+export function CompanyForm({ companyId, groupId, onCancelCreate, onSuccess }: Props) {
 	const [company, setCompany] = useState<Company | null>(() =>
 		companyId
 			? null
@@ -43,6 +45,8 @@ export function CompanyForm({ companyId, groupId, onCancelCreate }: Props) {
 
 	const [editMode, setEditMode] = useState(companyId ? false : true);
 	const [addingNewContact, setAddingNewContact] = useState(false);
+	const [showConfirmModal, setShowConfirmModal] = useState(false);
+	const [novaEmpresaId, setNovaEmpresaId] = useState<number | null>(null);
 
 	useEffect(() => {
 		if (!companyId) return;
@@ -50,8 +54,6 @@ export function CompanyForm({ companyId, groupId, onCancelCreate }: Props) {
 		api.get<Company>(`companies/companies/${companyId}/`)
 			.then(res => {
 				const data = res.data;
-
-				// ⚠️ Corrigir aqui
 				data.go_live = dateToString(data.go_live);
 				setCompany(data);
 			})
@@ -64,7 +66,6 @@ export function CompanyForm({ companyId, groupId, onCancelCreate }: Props) {
 	}
 
 	function stringToDate(dateBr: string): string {
-		console.log("dateBr =", dateBr);
 		if (!dateBr || dateBr.trim() === '') return '';
 
 		let parsed;
@@ -93,7 +94,7 @@ export function CompanyForm({ companyId, groupId, onCancelCreate }: Props) {
 		if (!company) return;
 		const payload: any = {
 			...company,
-			group: company.group?.id ?? groupId,
+			group_id: company.group?.id ?? groupId,
 			point_of_sale_id: company.point_of_sale?.id ?? null,
 			go_live: stringToDate(company.go_live),
 		};
@@ -101,18 +102,17 @@ export function CompanyForm({ companyId, groupId, onCancelCreate }: Props) {
 		delete payload.point_of_sale;
 		delete payload.travel_managers;
 
-		console.log('Payload final:', payload);
-
 		const request = company.id
 			? api.put(`companies/companies/${company.id}/`, payload)
 			: api.post('companies/companies/', payload);
 
 		request
 			.then((res) => {
-				// setCompany(res.data);
 				const novaEmpresa = res.data;
 				setCompany(novaEmpresa);
 				setEditMode(false);
+
+				if (onSuccess) onSuccess();
 
 				if (!companyId) {
 					api.get(`/companies/groups/${groupId}/`).then((groupRes) => {
@@ -123,6 +123,7 @@ export function CompanyForm({ companyId, groupId, onCancelCreate }: Props) {
 									.patch(`/companies/groups/${groupId}/`, { main_company: novaEmpresa.id })
 									.then(() => {
 										console.log("Empresa definida como principal com sucesso");
+										if (onSuccess) onSuccess(); // Força recarregar a lista com destaque em verde
 									})
 									.catch((err) => {
 										console.error("Erro ao definir empresa como principal:", err);
@@ -135,6 +136,22 @@ export function CompanyForm({ companyId, groupId, onCancelCreate }: Props) {
 			.catch((err) => {
 				console.error('Erro ao salvar empresa:', err);
 				// Aqui você pode fazer um toast ou alert amigável
+			});
+	}
+
+	function handleSetAsMainCompany() {
+		if (!novaEmpresaId) return;
+		api
+			.patch(`/companies/groups/${groupId}/`, { main_company: novaEmpresaId })
+			.then(() => {
+				console.log("Empresa definida como principal com sucesso");
+			})
+			.catch((err) => {
+				console.error("Erro ao definir empresa como principal:", err);
+			})
+			.finally(() => {
+				setNovaEmpresaId(null);
+				setShowConfirmModal(false);
 			});
 	}
 
@@ -253,6 +270,13 @@ export function CompanyForm({ companyId, groupId, onCancelCreate }: Props) {
 					</div>
 				</div>
 			)}
+			<ConfirmModal
+				title="Definir como principal"
+				message={`Deseja realmente tornar "${company.name}" a empresa principal do grupo?`}
+				isOpen={showConfirmModal}
+				onConfirm={handleSetAsMainCompany}
+				onCancel={() => setShowConfirmModal(false)}
+			/>
 		</>
 	);
 }

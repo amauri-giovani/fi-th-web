@@ -4,6 +4,7 @@ import { GroupTabs } from "@/components/layout/GroupTabs";
 import { GroupGeneralTab } from "@/components/groups/GroupGeneralTab";
 import { fetchGroupById } from "@/services/groupService";
 import type { Group } from "@/types/company";
+import CompaniesTab from "@/tabs/companies/Index";
 
 
 const TABS = [
@@ -65,7 +66,11 @@ export function GroupDetailsPage() {
           <GroupGeneralTab group={group} />
         )}
 
-        {activeTab !== "Geral" && (
+        {activeTab === "Empresas" && (
+          <CompaniesTab group={group} />
+        )}
+
+        {activeTab !== "Geral" && activeTab !== "Empresas" && (
           <div className="text-gray-500 italic">
             Conteúdo da aba "{activeTab}" em construção...
           </div>

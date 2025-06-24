@@ -2,7 +2,7 @@ import type { ButtonHTMLAttributes } from "react";
 
 
 interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
-  variant?: "primary" | "secondary" | "outline";
+  variant?: "primary" | "secondary" | "outline" | "link" | "inverted";
 }
 
 export default function Button({
@@ -17,6 +17,8 @@ export default function Button({
     primary: "bg-primary text-white hover:bg-primary/90",
     secondary: "bg-primary text-white",
     outline: "border border-gray-300 text-gray-800 bg-white hover:bg-gray-100",
+    link: "text-blue-600 hover:underline bg-transparent p-0",
+    inverted: "bg-white text-primary border border-primary font-semibold rounded-md shadow-sm hover:bg-gray-100 transition"
   };
 
   return (
@@ -27,5 +29,3 @@ export default function Button({
     />
   );
 }
-
-
