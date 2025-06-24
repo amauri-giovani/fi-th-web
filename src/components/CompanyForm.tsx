@@ -184,6 +184,7 @@ export function CompanyForm({ companyId, groupId, onCancelCreate, onSuccess }: P
 					<SmartSelectField
 						name="point_of_sale"
 						label="Ponto de Venda"
+						createFieldName="name"
 						value={company.point_of_sale?.id ?? null}
 						onChange={({ name, value }) =>
 							setCompany((prev) =>
@@ -194,7 +195,7 @@ export function CompanyForm({ companyId, groupId, onCancelCreate, onSuccess }: P
 					/>
 					<CompanyField label="Código Benner" name="benner_code" value={company.benner_code} onChange={handleChange} disabled={!editMode} />
 					<div>
-						<label className="block text-sm font-medium text-gray-700 mb-1">Go Live</label>
+						<label>Go Live</label>
 						<MaskedInput
 							name="go_live"
 							value={company.go_live}

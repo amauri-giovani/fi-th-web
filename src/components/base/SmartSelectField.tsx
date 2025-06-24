@@ -3,6 +3,8 @@ import SelectField from "./SelectField";
 import { api } from "@/services/api";
 import { Plus } from "lucide-react";
 import IconButton from "./IconButton";
+import InputModal from "./InputModal";
+import { toast } from "react-toastify";
 
 
 type Option = {
@@ -15,6 +17,7 @@ type Props = {
   value: string | number | null;
   onChange: (e: { name: string; value: string | number | null }) => void;
   label?: string;
+  createFieldName?: string;
   disabled?: boolean;
   placeholder?: string;
   options?: Option[]; // só usado para campos locais
@@ -32,6 +35,7 @@ export default function SmartSelectField({
   value,
   onChange,
   label,
+  createFieldName,
   disabled = false,
   placeholder = "Selecione uma opção",
   options = [],
@@ -39,6 +43,7 @@ export default function SmartSelectField({
   const isRemote = name in ENDPOINT_MAP;
   const [internalOptions, setInternalOptions] = useState<Option[]>(options);
   const [loading, setLoading] = useState(isRemote);
+  const [modalOpen, setModalOpen] = useState(false);
 
   const loadOptions = async () => {
     if (!isRemote) return;
@@ -49,7 +54,6 @@ export default function SmartSelectField({
       const data = res.data.results ?? res.data;
       setInternalOptions(data);
     } catch (err) {
-      console.error(`Erro ao buscar opções para ${name}:`, err);
       setInternalOptions([]);
     } finally {
       setLoading(false);
@@ -60,43 +64,52 @@ export default function SmartSelectField({
     if (isRemote) loadOptions();
   }, [name]);
 
-  const handleCreateNew = async () => {
-    const label = prompt("Digite o nome do novo item:");
-    if (!label) return;
-
-    try {
-      const res = await api.post(ENDPOINT_MAP[name], { [name]: label });
-      const newItem = res.data;
-
-      await loadOptions();
-      onChange({ name, value: newItem.id });
-    } catch (err) {
-      console.error("Erro ao criar item:", err);
-      alert("Erro ao criar item.");
-    }
+  const createNewOption = (label: string) => {
+    const field = createFieldName || "name";
+    api.post(ENDPOINT_MAP[name], { [field]: label })
+      .then((res) => {
+        const newItem = res.data;
+        loadOptions().then(() => {
+          onChange({ name, value: newItem.id });
+        });
+        toast.success("Item criado com sucesso!");
+      })
+      .catch((err) => {
+        toast.error(err.response?.data?.detail || "Erro ao criar item");
+      })
+      .finally(() => setModalOpen(false));
   };
 
   return (
-    <div className="flex items-end gap-2">
-      <div className="flex-1">
-        <SelectField
-          name={name}
-          value={value}
-          options={internalOptions}
-          onChange={onChange}
-          label={label}
-          disabled={disabled || loading}
-          placeholder={loading ? "Carregando..." : placeholder}
-        />
-      </div>
+    <>
+      <div className="flex items-end gap-2">
+        <div className="flex-1">
+          <SelectField
+            name={name}
+            value={value}
+            options={internalOptions}
+            onChange={onChange}
+            label={label}
+            disabled={disabled || loading}
+            placeholder={loading ? "Carregando..." : placeholder}
+          />
+        </div>
 
-      {isRemote && (
-        <IconButton
-          onClick={handleCreateNew}
-          title="Adicionar novo"
-          icon={Plus}
-        />
-      )}
-    </div>
+        {isRemote && !disabled && (
+          <IconButton
+            onClick={() => setModalOpen(true)}
+            title="Adicionar novo"
+            icon={Plus}
+          />
+        )}
+      </div>
+      <InputModal
+        title="Novo item"
+        isOpen={modalOpen}
+        onCancel={() => setModalOpen(false)}
+        onConfirm={(value) => createNewOption(value)}
+        placeholder="Digite o nome do novo item"
+      />
+    </>
   );
 }
