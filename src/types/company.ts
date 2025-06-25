@@ -4,6 +4,7 @@ export type Group = {
   slug: string;
   main_company: number | null;
   main_company_name: string | null;
+  companies?: Company[];
 };
 
 export type PointOfSale = {
@@ -31,6 +32,7 @@ export type Company = {
     name: string;
     slug: string;
   };
+  expiration_date: string;
 };
 
 export type CompanyContact = {

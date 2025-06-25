@@ -41,6 +41,7 @@ export function CompanyForm({ companyId, groupId, onCancelCreate, onSuccess }: P
 					slug: '',
 				},
 				travel_managers: [],
+				expiration_date: ''
 			}
 	);
 
@@ -112,15 +113,18 @@ export function CompanyForm({ companyId, groupId, onCancelCreate, onSuccess }: P
 				const newCompany = res.data;
 				setCompany(newCompany);
 				setEditMode(false);
-				if (onSuccess) onSuccess(newCompany);
 
 				if (!companyId) {
 					api.get(`/companies/groups/${groupId}/`).then((groupRes) => {
 						if (!groupRes.data.main_company) {
 							setnewCompanyId(newCompany.id);
 							setShowConfirmModal(true);
+						} else {
+							onSuccess?.(newCompany);
 						}
 					});
+				} else {
+					onSuccess?.(newCompany);
 				}
 			})
 			.catch((err) => {
@@ -130,10 +134,13 @@ export function CompanyForm({ companyId, groupId, onCancelCreate, onSuccess }: P
 	}
 
 	function handleSetAsMainCompany() {
-		if (!newCompanyId) return;
+		if (!newCompanyId) {
+			return;
+		}
 		api
 			.patch(`/companies/groups/${groupId}/`, { main_company: newCompanyId })
 			.then(() => {
+				onSuccess?.(company!);
 				console.log("Empresa definida como principal com sucesso");
 				toast.success("Empresa definida como principal com sucesso");
 			})

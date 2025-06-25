@@ -94,7 +94,6 @@ export default function CompaniesTab({ group }: Props) {
               });
             }}
           />
-
         </div>
       )}
     </div>
