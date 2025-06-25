@@ -32,7 +32,13 @@ export type Company = {
     name: string;
     slug: string;
   };
-  expiration_date: string;
+  account_executive: {
+    id: number,
+    name: string
+  };
+  current_contract: {
+    expiration_date: string;
+  }
 };
 
 export type CompanyContact = {

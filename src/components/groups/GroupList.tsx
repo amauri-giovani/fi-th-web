@@ -1,9 +1,10 @@
 import { useEffect, useState } from "react";
 import { api } from "../../services/api";
-import type { Group } from "../../types/company";
+import type { Company, Group } from "../../types/company";
 import { useNavigate } from "react-router-dom";
 import GroupForm from "@/components/groups/GroupForm";
 import { toast } from "react-toastify";
+import { format, parseISO, parse } from 'date-fns';
 
 
 export function GroupList() {
@@ -17,6 +18,11 @@ export function GroupList() {
       .then((res) => setGroups(res.data))
       .catch((err) => console.error("Erro ao carregar grupos:", err));
   };
+
+  function dateToString(isoDate?: string) {
+    if (!isoDate || isNaN(Date.parse(isoDate))) return '';
+    return format(parseISO(isoDate), 'dd/MM/yyyy');
+  }
 
   useEffect(() => {
     fetchGroups();
@@ -57,19 +63,24 @@ export function GroupList() {
             </tr>
           </thead>
           <tbody className="divide-y divide-gray-200">
-            {groups.map((group) => (
-              <tr
-                key={group.id}
-                onClick={() => navigate(`/companies/groups/${group.id}`)}
-                className="cursor-pointer odd:bg-white even:bg-gray-50 hover:bg-gray-100 transition"
-              >
-                <td className="px-4 py-3 text-primary font-medium">{group.name}</td>
-                <td className="px-4 py-3">{group.main_company?.cnpj || "—"}</td>
-                <td className="px-4 py-3">{group.main_company?.point_of_sale || "—"}</td>
-                <td className="px-4 py-3">{group.main_company?.contract_expiration || "—"}</td>
-                <td className="px-4 py-3">{group.main_company?.executive || "—"}</td>
-              </tr>
-            ))}
+            {groups.map((group) => {
+              const mainCompany = group.companies?.find(
+                (company: Company) => company.id === group.main_company
+              );
+              return (
+                <tr
+                  key={group.id}
+                  onClick={() => navigate(`/companies/groups/${group.id}`)}
+                  className="cursor-pointer odd:bg-white even:bg-gray-50 hover:bg-gray-100 transition"
+                >
+                  <td className="px-4 py-3 text-primary font-medium">{group.name}</td>
+                  <td className="px-4 py-3">{mainCompany?.cnpj || "—"}</td>
+                  <td className="px-4 py-3">{mainCompany?.point_of_sale?.name || "—"}</td>
+                  <td className="px-4 py-3">{dateToString(mainCompany?.current_contract.expiration_date) || "—"}</td>
+                  <td className="px-4 py-3">{mainCompany?.account_executive?.name || "—"}</td>
+                </tr>
+              );
+            })}
           </tbody>
         </table>
       </div>

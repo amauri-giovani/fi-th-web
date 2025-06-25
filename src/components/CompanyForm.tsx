@@ -38,10 +38,16 @@ export function CompanyForm({ companyId, groupId, onCancelCreate, onSuccess }: P
 				group: {
 					id: groupId,
 					name: '',
-					slug: '',
+					slug: ''
 				},
 				travel_managers: [],
-				expiration_date: ''
+				account_executive: {
+					id: 0,
+					name: ""
+				},
+				current_contract: {
+					expiration_date: ""
+				}
 			}
 	);
 

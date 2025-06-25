@@ -3,6 +3,7 @@ import type { Company } from "@/types/company";
 import Button from "@/components/base/Button";
 import ConfirmModal from "@/components/base/ConfirmModal";
 import { api } from "@/services/api";
+import { toast } from "react-toastify";
 
 
 type Props = {
@@ -39,9 +40,10 @@ export default function CompaniesList({
     })
       .then(() => {
         onUpdateMainCompany();
+        toast.success(`Empresa ${modalCompany.name} definida como principal`)
       })
-      .catch((err) => {
-        console.error("Erro ao trocar empresa principal:", err);
+      .catch(() => {
+        toast.error("Erro ao trocar empresa principal");
       })
       .finally(() => setModalCompany(null));
   };
