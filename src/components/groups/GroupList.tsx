@@ -76,7 +76,7 @@ export function GroupList() {
                   <td className="px-4 py-3 text-primary font-medium">{group.name}</td>
                   <td className="px-4 py-3">{mainCompany?.cnpj || "—"}</td>
                   <td className="px-4 py-3">{mainCompany?.point_of_sale?.name || "—"}</td>
-                  <td className="px-4 py-3">{dateToString(mainCompany?.current_contract.expiration_date) || "—"}</td>
+                  <td className="px-4 py-3">{dateToString(mainCompany?.current_contract?.expiration_date) || "—"}</td>
                   <td className="px-4 py-3">{mainCompany?.account_executive?.name || "—"}</td>
                 </tr>
               );

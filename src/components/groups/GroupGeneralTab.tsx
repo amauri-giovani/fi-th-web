@@ -7,9 +7,10 @@ import Button from "../base/Button";
 
 type Props = {
   group: Group;
+  setActiveTab: (tab: string) => void;
 };
 
-export function GroupGeneralTab({ group }: Props) {
+export function GroupGeneralTab({ group, setActiveTab }: Props) {
   const [companies, setCompanies] = useState<Company[]>([]);
   const [creatingCompany, setCreatingCompany] = useState(false);
 
@@ -44,7 +45,7 @@ export function GroupGeneralTab({ group }: Props) {
             </div>
           ) : (
             <div className="mt-4">
-              <Button variant="primary" onClick={() => setCreatingCompany(true)}>
+               <Button variant="primary" onClick={() => setActiveTab("Empresas")}>
                 Criar empresa
               </Button>
             </div>

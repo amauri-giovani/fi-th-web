@@ -281,7 +281,11 @@ export function CompanyForm({ companyId, groupId, onCancelCreate, onSuccess }: P
 				message={`Deseja realmente tornar "${company.name}" a empresa principal do grupo?`}
 				isOpen={showConfirmModal}
 				onConfirm={handleSetAsMainCompany}
-				onCancel={() => setShowConfirmModal(false)}
+				onCancel={() => {
+					setShowConfirmModal(false);
+					setnewCompanyId(null);
+					onSuccess?.(company!);
+				}}
 			/>
 		</>
 	);

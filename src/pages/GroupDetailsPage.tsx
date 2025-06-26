@@ -63,7 +63,7 @@ export function GroupDetailsPage() {
 
       <div className="mt-8">
         {activeTab === "Geral" && (
-          <GroupGeneralTab group={group} />
+          <GroupGeneralTab group={group} setActiveTab={setActiveTab} />
         )}
 
         {activeTab === "Empresas" && (
