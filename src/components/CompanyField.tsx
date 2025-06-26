@@ -1,4 +1,5 @@
 import type { Company } from '../types/company';
+import Input from './base/Input';
 import { MaskedInput } from './base/MaskedInput';
 
 
@@ -51,14 +52,22 @@ export function CompanyField({ label, name, value, disabled, onChange, multiline
           disabled={disabled}
         />
       ) : (
-        <input
+        <Input
           name={name}
           value={value}
           onChange={onChange}
           disabled={disabled}
           placeholder={placeholder}
-          style={{ width: '100%' }}
         />
+
+        // <input
+        //   name={name}
+        //   value={value}
+        //   onChange={onChange}
+        //   disabled={disabled}
+        //   placeholder={placeholder}
+        //   style={{ width: '100%' }}   // se tirar não ocupa a coluna inteira
+        // />
       )}
     </div>
   );

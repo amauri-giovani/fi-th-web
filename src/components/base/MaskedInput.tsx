@@ -1,6 +1,7 @@
 import React from 'react';
 import { forwardRef } from 'react';
 import { PatternFormat } from 'react-number-format';
+import Input from './Input';
 
 
 type Props = {
@@ -26,14 +27,12 @@ export function MaskedInput({ name, value, onChange, disabled }: Props) {
   const format = formatMap[name];
 
   if (!format) {
-    // Fallback sem máscara
     return (
-      <input
+      <Input
         name={name}
         value={value}
         onChange={onChange}
         disabled={disabled}
-        style={{ width: '100%' }}
       />
     );
   }

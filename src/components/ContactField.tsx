@@ -1,4 +1,5 @@
 import type { CompanyContact } from '../types/company';
+import Input from './base/Input';
 import { MaskedInput } from './base/MaskedInput';
 
 
@@ -35,13 +36,12 @@ export function ContactField({ label, name, value, disabled, onChange }: Props) 
           disabled={disabled}
         />
       ) : (
-        <input
+        <Input
           name={name}
           value={value}
           onChange={onChange}
           disabled={disabled}
           placeholder={placeholder}
-          style={{ width: '100%' }}
         />
       )}
     </div>

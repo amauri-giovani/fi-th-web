@@ -5,6 +5,7 @@ import { useNavigate } from "react-router-dom";
 import GroupForm from "@/components/groups/GroupForm";
 import { toast } from "react-toastify";
 import { format, parseISO, parse } from 'date-fns';
+import Button from "../base/Button";
 
 
 export function GroupList() {
@@ -32,12 +33,9 @@ export function GroupList() {
     <section>
       <div className="flex justify-between items-center mb-6">
         <h2 className="text-2xl font-semibold text-gray-800">Grupos cadastrados</h2>
-        <button
-          className="bg-primary text-white px-4 py-2 rounded hover:bg-primary/90 transition"
-          onClick={() => setShowGroupForm(true)}
-        >
-          + Novo grupo
-        </button>
+        <Button rounded onClick={() => setShowGroupForm(true)}>
+          Adicionar novo grupo
+        </Button>
       </div>
 
       {showGroupForm && (

@@ -50,10 +50,10 @@ export default function GroupForm({ onCancel, onSuccess }: Props) {
       </div>
 
       <div className="flex justify-end gap-2">
-        <Button variant="outline" onClick={onCancel} disabled={loading}>
+        <Button rounded variant="outline" onClick={onCancel} disabled={loading}>
           Cancelar
         </Button>
-        <Button onClick={handleSubmit} disabled={loading || !name.trim()}>
+        <Button rounded onClick={handleSubmit} disabled={loading || !name.trim()}>
           {loading ? "Salvando..." : "Salvar"}
         </Button>
       </div>
