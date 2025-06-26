@@ -3,7 +3,7 @@ import { api } from '../services/api';
 import type { Company } from '../types/company';
 import { CompanyField } from './CompanyField';
 import { TravelManagerForm } from './TravelManagerForm';
-import { format, parseISO, parse } from 'date-fns';
+import { format, parseISO, parse, isValid } from 'date-fns';
 import SmartSelectField from './base/SmartSelectField';
 import { MaskedInput } from './base/MaskedInput';
 import Button from './base/Button';
@@ -79,15 +79,12 @@ export function CompanyForm({ companyId, groupId, onCancelCreate, onSuccess }: P
 		let parsed;
 
 		if (/^\d{8}$/.test(dateBr)) {
-			const day = dateBr.slice(0, 2);
-			const month = dateBr.slice(2, 4);
-			const year = dateBr.slice(4, 8);
-			parsed = new Date(`${year}-${month}-${day}`);
+			parsed = parse(dateBr, 'ddMMyyyy', new Date());
 		} else {
 			parsed = parse(dateBr, 'dd/MM/yyyy', new Date());
 		}
 
-		if (isNaN(parsed.getTime())) return '';
+		if (!isValid(parsed)) return '';
 
 		return format(parsed, 'yyyy-MM-dd');
 	}
@@ -116,7 +113,10 @@ export function CompanyForm({ companyId, groupId, onCancelCreate, onSuccess }: P
 
 		request
 			.then((res) => {
-				const newCompany = res.data;
+				const newCompany = {
+					...res.data,
+					go_live: dateToString(res.data.go_live),
+				};
 				setCompany(newCompany);
 				setEditMode(false);
 
@@ -165,7 +165,9 @@ export function CompanyForm({ companyId, groupId, onCancelCreate, onSuccess }: P
 			api
 				.get<Company>(`companies/companies/${companyId}/`)
 				.then((res) => {
-					setCompany(res.data);
+					const data = res.data;
+					data.go_live = dateToString(data.go_live);
+					setCompany(data);
 					setEditMode(false);
 				});
 		} else {
