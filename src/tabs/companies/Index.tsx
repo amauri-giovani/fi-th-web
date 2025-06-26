@@ -58,7 +58,7 @@ export default function CompaniesTab({ group }: Props) {
             Voltar à lista de empresas
           </Button>
         ) : (
-          <Button onClick={handleCreateClick}>Adicionar nova empresa</Button>
+          <Button rounded onClick={handleCreateClick}>Adicionar nova empresa</Button>
         )}
       </div>
 

@@ -45,7 +45,7 @@ export function GroupGeneralTab({ group, setActiveTab }: Props) {
             </div>
           ) : (
             <div className="mt-4">
-               <Button variant="primary" onClick={() => setActiveTab("Empresas")}>
+               <Button rounded variant="primary" onClick={() => setActiveTab("Empresas")}>
                 Criar empresa
               </Button>
             </div>

@@ -81,11 +81,11 @@ export function TravelManagerForm({ contact, companyId, onUpdate, onClose }: Pro
       <div className="mt-4 flex gap-2">
         {editMode ? (
           <>
-            <Button type="submit">Salvar</Button>
-            <Button variant="outline" onClick={handleCancel}>Cancelar</Button>
+            <Button type="submit" rounded>Salvar</Button>
+            <Button variant="outline" rounded onClick={handleCancel}>Cancelar</Button>
           </>
         ) : (
-          <Button onClick={(e) => { e.preventDefault(); setEditMode(true); }}>Editar</Button>
+          <Button rounded onClick={(e) => { e.preventDefault(); setEditMode(true); }}>Editar</Button>
         )}
       </div>
     </form>

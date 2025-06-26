@@ -224,12 +224,12 @@ export function CompanyForm({ companyId, groupId, onCancelCreate, onSuccess }: P
 				<div className="mt-6 flex gap-4">
 					{editMode ? (
 						<>
-							<Button type="submit">Salvar</Button>
-							<Button variant="outline" onClick={handleCancel}>Cancelar</Button>
+							<Button type="submit" rounded>Salvar</Button>
+							<Button variant="outline" rounded onClick={handleCancel}>Cancelar</Button>
 						</>
 					) : (
 						<>
-							<Button onClick={(e) => { e.preventDefault(); setEditMode(true); }}>Editar</Button>
+							<Button rounded onClick={(e) => { e.preventDefault(); setEditMode(true); }}>Editar</Button>
 						</>
 					)}
 				</div>
@@ -241,7 +241,7 @@ export function CompanyForm({ companyId, groupId, onCancelCreate, onSuccess }: P
 					<div className="flex justify-between items-center mb-4">
 						<h3 className="text-md font-semibold text-gray-800">Gestores de Viagem</h3>
 						{!addingNewContact && company.id && (
-							<Button onClick={() => setAddingNewContact(true)}>Novo gestor de viagem</Button>
+							<Button rounded onClick={() => setAddingNewContact(true)}>Novo gestor de viagem</Button>
 						)}
 					</div>
 

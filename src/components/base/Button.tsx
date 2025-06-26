@@ -3,15 +3,17 @@ import type { ButtonHTMLAttributes } from "react";
 
 interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
   variant?: "primary" | "secondary" | "outline" | "link" | "inverted";
+  rounded?: boolean;
 }
 
 export default function Button({
   variant = "primary",
   className = "",
   type = "button",
+  rounded = false,
   ...props
 }: ButtonProps) {
-  const baseStyles = "px-4 py-2 rounded transition";
+  const baseStyles = `px-4 py-2 ${rounded ? "rounded-full" : "rounded"} transition`;
 
   const variants = {
     primary: "bg-primary text-white hover:bg-primary/90",
