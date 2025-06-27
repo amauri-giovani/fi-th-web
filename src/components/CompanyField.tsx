@@ -41,8 +41,9 @@ export function CompanyField({ label, name, value, disabled, onChange, multiline
           onChange={onChange}
           disabled={disabled}
           placeholder={placeholder}
-          rows={3}
+          rows={4}
           style={{ width: '100%' }}
+          className="px-3 py-2 text-sm border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 resize-y"
         />
       ) : useMaskedInput ? (
         <MaskedInput

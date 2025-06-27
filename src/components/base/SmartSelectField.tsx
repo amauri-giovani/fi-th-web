@@ -82,27 +82,44 @@ export default function SmartSelectField({
 
   return (
     <>
-      <div className="flex items-end gap-2">
-        <div className="flex-1">
-          <SelectField
-            name={name}
-            value={value}
-            options={internalOptions}
-            onChange={onChange}
-            label={label}
-            disabled={disabled || loading}
-            placeholder={loading ? "Carregando..." : placeholder}
-          />
-        </div>
+      <div className="flex flex-col gap-1">
+        {label && <label htmlFor={name}>{label}</label>}
 
-        {isRemote && !disabled && (
-          <IconButton
-            onClick={() => setModalOpen(true)}
-            title="Adicionar novo"
-            icon={Plus}
-          />
-        )}
+        <div className="flex  overflow-hidden mt-[-3px] border border-gray-300 rounded-md active:rounded-bl-none">
+          <select
+            id={name}
+            name={name}
+            disabled={disabled}
+            value={value ?? ""}
+            onChange={(e) =>
+              onChange({
+                name,
+                value: e.target.value === "" ? null : e.target.value,
+              })
+            }
+            className="flex-1 px-2 py-2 text-sm bg-white focus:outline-none disabled:bg-gray-100"
+          >
+            <option value="">{loading ? "Carregando..." : placeholder}</option>
+            {internalOptions.map((opt) => (
+              <option key={opt.id} value={opt.id}>
+                {opt.name}
+              </option>
+            ))}
+          </select>
+
+          {isRemote && !disabled && (
+            <button
+              type="button"
+              onClick={() => setModalOpen(true)}
+              className="px-3 bg-primary text-white flex items-center justify-center hover:bg-primary/90"
+              title="Adicionar novo"
+            >
+              <Plus size={16} />
+            </button>
+          )}
+        </div>
       </div>
+
       <InputModal
         title="Novo item"
         isOpen={modalOpen}

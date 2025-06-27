@@ -3,6 +3,7 @@ import { api } from '../services/api';
 import type { CompanyContact } from '../types/company';
 import { ContactField } from './ContactField';
 import Button from './base/Button';
+import { toast } from 'react-toastify';
 
 
 type Props = {
@@ -54,8 +55,9 @@ export function TravelManagerForm({ contact, companyId, onUpdate, onClose }: Pro
         setEditMode(false);
         onUpdate();
         onClose?.();
+        toast.success("Contato salvo com sucesso")
       })
-      .catch((err) => console.error("Erro ao salvar contato:", err));
+      .catch(() => toast.error("Erro ao salvar contato:"));
   }
 
   function handleCancel() {
