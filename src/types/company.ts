@@ -38,6 +38,7 @@ export type Company = {
   };
   current_contract: {
     expiration_date: string;
+    status: string;
   }
 };
 

@@ -3,6 +3,7 @@ import { api } from "@/services/api";
 import { CompanyForm } from "../CompanyForm";
 import type { Company, Group } from "@/types/company";
 import Button from "../base/Button";
+import { toast } from "react-toastify";
 
 
 type Props = {
@@ -13,20 +14,30 @@ type Props = {
 export function GroupGeneralTab({ group, setActiveTab }: Props) {
   const [companies, setCompanies] = useState<Company[]>([]);
   const [creatingCompany, setCreatingCompany] = useState(false);
+  const [ready, setReady] = useState(false); // controle de exibição
 
   const fetchCompanies = () => {
     api
       .get<Company[]>(`/companies/companies/?group=${group.id}`)
       .then((res) => setCompanies(res.data))
-      .catch((err) => console.error("Erro ao buscar empresas do grupo:", err));
+      .catch(() => toast.error("Erro ao buscar empresas do grupo:"));
   };
 
   useEffect(() => {
+    setReady(false);
     fetchCompanies();
+
+    const timeout = setTimeout(() => {
+      setReady(true);
+    }, 300); // pequeno atraso para evitar flash
+
+    return () => clearTimeout(timeout);
   }, [group.id]);
 
   const hasCompanies = companies.length > 0;
   const hasMainCompany = Boolean(group.main_company);
+
+  if (!ready) return null;
 
   return (
     <div className="mb-6">
@@ -45,7 +56,7 @@ export function GroupGeneralTab({ group, setActiveTab }: Props) {
             </div>
           ) : (
             <div className="mt-4">
-               <Button rounded variant="primary" onClick={() => setActiveTab("Empresas")}>
+              <Button rounded variant="primary" onClick={() => setActiveTab("Empresas")}>
                 Criar empresa
               </Button>
             </div>

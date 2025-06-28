@@ -4,14 +4,20 @@ import type { Company, Group } from "../../types/company";
 import { useNavigate } from "react-router-dom";
 import GroupForm from "@/components/groups/GroupForm";
 import { toast } from "react-toastify";
-import { format, parseISO, parse } from 'date-fns';
+import { format, parseISO } from "date-fns";
 import Button from "../base/Button";
+import { CheckCircle, CircleAlert, CircleX, Search } from "lucide-react";
+import Input from "../base/Input";
+import { useDebounce } from "use-debounce";
 
 
 export function GroupList() {
+  const navigate = useNavigate();
   const [groups, setGroups] = useState<Group[]>([]);
   const [showGroupForm, setShowGroupForm] = useState(false);
-  const navigate = useNavigate();
+  const [searchTerm, setSearchTerm] = useState("");
+  const [debouncedSearchTerm] = useDebounce(searchTerm, 200);
+  const filteredGroups = filterGroups(groups, debouncedSearchTerm);
 
   const fetchGroups = () => {
     api
@@ -20,9 +26,41 @@ export function GroupList() {
       .catch((err) => console.error("Erro ao carregar grupos:", err));
   };
 
+  function filterGroups(groups: Group[], term: string): Group[] {
+    if (term.length < 3) return groups;
+
+    const lowerTerm = term.toLowerCase();
+
+    return groups.filter((group) => {
+      const company = group.companies?.find(c => c.id === group.main_company);
+
+      const valuesToSearch = [
+        group.name,
+        company?.cnpj,
+        company?.point_of_sale?.name,
+        dateToString(company?.current_contract?.expiration_date), !
+        company?.account_executive?.name,
+      ];
+
+      return valuesToSearch.some((value) =>
+        String(value || "").toLowerCase().includes(lowerTerm)
+      );
+    });
+  }
+
   function dateToString(isoDate?: string) {
-    if (!isoDate || isNaN(Date.parse(isoDate))) return '';
-    return format(parseISO(isoDate), 'dd/MM/yyyy');
+    if (!isoDate || isNaN(Date.parse(isoDate))) return "";
+    return format(parseISO(isoDate), "dd/MM/yyyy");
+  }
+
+  function renderStatusIcon(status: string | undefined) {
+    const iconMap = {
+      Vigente: <CheckCircle className="text-green-500 w-4 h-4" />,
+      Expirando: <CircleAlert className="text-yellow-500 w-4 h-4" />,
+      Vencido: <CircleX className="text-red-500 w-4 h-4" />,
+    };
+
+    return iconMap[status as keyof typeof iconMap] || null;
   }
 
   useEffect(() => {
@@ -49,6 +87,19 @@ export function GroupList() {
         />
       )}
 
+      <div className="mb-4" style={{ width: "500px" }}>
+        <div className="relative">
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 w-4 h-4 pointer-events-none" />
+          <Input
+            type="text"
+            placeholder="Buscar"
+            className="pl-9"
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+          />
+        </div>
+      </div>
+
       <div className="overflow-x-auto">
         <table className="min-w-full text-sm text-left">
           <thead className="bg-gray-200 text-gray-600 font-medium">
@@ -61,7 +112,7 @@ export function GroupList() {
             </tr>
           </thead>
           <tbody className="divide-y divide-gray-200">
-            {groups.map((group) => {
+            {filteredGroups.map((group) => {
               const mainCompany = group.companies?.find(
                 (company: Company) => company.id === group.main_company
               );
@@ -74,7 +125,12 @@ export function GroupList() {
                   <td className="px-4 py-3 text-primary font-medium">{group.name}</td>
                   <td className="px-4 py-3">{mainCompany?.cnpj || "—"}</td>
                   <td className="px-4 py-3">{mainCompany?.point_of_sale?.name || "—"}</td>
-                  <td className="px-4 py-3">{dateToString(mainCompany?.current_contract?.expiration_date) || "—"}</td>
+                  <td className="px-4 py-3">
+                    <div className="flex items-center gap-2">
+                      {dateToString(mainCompany?.current_contract?.expiration_date) || "—"}
+                      {renderStatusIcon(mainCompany?.current_contract?.status)}
+                    </div>
+                  </td>
                   <td className="px-4 py-3">{mainCompany?.account_executive?.name || "—"}</td>
                 </tr>
               );
