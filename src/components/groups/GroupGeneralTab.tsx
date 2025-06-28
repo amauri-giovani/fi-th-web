@@ -14,7 +14,7 @@ type Props = {
 export function GroupGeneralTab({ group, setActiveTab }: Props) {
   const [companies, setCompanies] = useState<Company[]>([]);
   const [creatingCompany, setCreatingCompany] = useState(false);
-  const [ready, setReady] = useState(false); // controle de exibição
+  const [ready, setReady] = useState(false);
 
   const fetchCompanies = () => {
     api
@@ -29,7 +29,7 @@ export function GroupGeneralTab({ group, setActiveTab }: Props) {
 
     const timeout = setTimeout(() => {
       setReady(true);
-    }, 300); // pequeno atraso para evitar flash
+    }, 500);
 
     return () => clearTimeout(timeout);
   }, [group.id]);

@@ -119,6 +119,7 @@ export default function CompaniesList({
         isOpen={modalCompany !== null}
         onConfirm={handleSetAsMain}
         onCancel={() => setModalCompany(null)}
+				cancelLabel="Não"
       />
     </>
   );

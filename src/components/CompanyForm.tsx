@@ -46,7 +46,8 @@ export function CompanyForm({ companyId, groupId, onCancelCreate, onSuccess }: P
 					name: ""
 				},
 				current_contract: {
-					expiration_date: ""
+					expiration_date: "",
+					status: ""
 				}
 			}
 	);
@@ -280,7 +281,7 @@ export function CompanyForm({ companyId, groupId, onCancelCreate, onSuccess }: P
 			)}
 			<ConfirmModal
 				title="Definir como principal"
-				message={`Deseja realmente tornar "${company.name}" a empresa principal do grupo?`}
+				message={`Deseja tornar "${company.name}" como empresa principal do grupo?`}
 				isOpen={showConfirmModal}
 				onConfirm={handleSetAsMainCompany}
 				onCancel={() => {
@@ -288,6 +289,7 @@ export function CompanyForm({ companyId, groupId, onCancelCreate, onSuccess }: P
 					setnewCompanyId(null);
 					onSuccess?.(company!);
 				}}
+				cancelLabel="Não"
 			/>
 		</>
 	);

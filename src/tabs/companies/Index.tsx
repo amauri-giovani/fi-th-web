@@ -84,13 +84,14 @@ export default function CompaniesTab({ group }: Props) {
             groupId={group.id}
             companyId={selectedCompany?.id}
             onCancelCreate={handleCloseForm}
-            onSuccess={() => {
+            onSuccess={(updatedCompany) => {
               api.get(`/companies/groups/${group.id}/`).then((res) => {
                 group.main_company = res.data.main_company;
                 fetchCompanies();
                 setCreatingNew(false);
                 setSelectedCompany(null);
-                toast.success("Empresa criada com sucesso!");
+                const isEdit = !!updatedCompany.id && !!selectedCompany;
+                toast.success(isEdit ? "Empresa alterada com sucesso!" : "Empresa criada com sucesso!");
               });
             }}
           />
