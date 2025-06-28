@@ -40,7 +40,7 @@ export default function CompaniesList({
     })
       .then(() => {
         onUpdateMainCompany();
-        toast.success(`Empresa ${modalCompany.name} definida como principal`)
+        toast.success(`Empresa ${modalCompany.name} definida como principal do grupo`)
       })
       .catch(() => {
         toast.error("Erro ao trocar empresa principal");
@@ -79,7 +79,8 @@ export default function CompaniesList({
       <td className="px-4 py-2">
         {!isMain && (
           <Button
-            variant="link"
+          rounded
+            variant="outline"
             onClick={(e) => {
               e.stopPropagation(); // impede que clique dispare o onSelect
               setModalCompany(company); // abre o modal
@@ -102,7 +103,7 @@ export default function CompaniesList({
               <th className="px-4 py-2">Fantasia</th>
               <th className="px-4 py-2">CNPJ</th>
               <th className="px-4 py-2">Endereço Completo</th>
-              <th className="px-4 py-2">Cod. Backoffice</th>
+              <th className="px-4 py-2">Código Backoffice</th>
               <th className="px-4 py-2"></th>
             </tr>
           </thead>
@@ -115,7 +116,7 @@ export default function CompaniesList({
 
       <ConfirmModal
         title="Definir como principal"
-        message={`Deseja realmente tornar "${modalCompany?.name}" a empresa principal do grupo?`}
+        message={`Deseja realmente tornar "${modalCompany?.name}" como empresa principal do grupo?`}
         isOpen={modalCompany !== null}
         onConfirm={handleSetAsMain}
         onCancel={() => setModalCompany(null)}
