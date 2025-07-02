@@ -1,8 +1,6 @@
 import { useEffect, useState } from "react";
-import SelectField from "./SelectField";
 import { api } from "@/services/api";
 import { Plus } from "lucide-react";
-import IconButton from "./IconButton";
 import InputModal from "./InputModal";
 import { toast } from "react-toastify";
 
@@ -85,7 +83,7 @@ export default function SmartSelectField({
       <div className="flex flex-col gap-1">
         {label && <label htmlFor={name}>{label}</label>}
 
-        <div className="flex  overflow-hidden mt-[-3px] border border-gray-300 rounded-md active:rounded-bl-none">
+        <div className="flex overflow-hidden mt-[-3px] border border-gray-300 rounded-md active:rounded-bl-none">
           <select
             id={name}
             name={name}

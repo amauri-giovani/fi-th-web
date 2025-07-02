@@ -51,7 +51,13 @@ export type CompanyContact = {
   whatsapp: string;
   email: string;
   is_travel_manager: boolean;
-  is_account_executive: boolean;
   is_billing_contact: boolean;
-  company: number;
+  is_financial_contact: boolean;
+  is_commercial_contact: boolean;
+  is_secretary_vip: boolean;
+  is_vip: boolean;
+  company?: {
+    id: number,
+    name: string
+  };
 };

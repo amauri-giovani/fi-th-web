@@ -10,7 +10,7 @@ type Props = {
   onChange: (e: { name: string; value: string | number | null }) => void;
   label?: string;
   disabled?: boolean;
-  placeholder?: string;
+  placeholder?: string | null;
 };
 
 export default function SelectField({
@@ -37,9 +37,12 @@ export default function SelectField({
             value: e.target.value === "" ? null : e.target.value,
           })
         }
-        className="border border-gray-300 rounded px-2 py-1"
+        className="flex-1 px-2 py-2 text-sm bg-white border border-gray-300  rounded-md focus:outline-none disabled:bg-gray-100 active:rounded-b-none"
       >
-        <option value="">{placeholder}</option>
+        {placeholder !== null && (
+          <option value="">{placeholder}</option>
+        )}
+
         {options.map((opt) => (
           <option key={opt.id} value={opt.id}>
             {opt.name}

@@ -50,7 +50,7 @@ export default function CompaniesTab({ group }: Props) {
       <div className="flex justify-between items-center mb-4">
         <h2 className="text-xl font-semibold text-gray-800">Empresas</h2>
         {creatingNew || selectedCompany ? (
-          <Button variant="inverted" className="flex items-center" onClick={() => {
+          <Button rounded variant="inverted" className="flex items-center" onClick={() => {
             setCreatingNew(false);
             setSelectedCompany(null);
           }}>

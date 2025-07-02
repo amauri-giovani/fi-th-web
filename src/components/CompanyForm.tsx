@@ -2,7 +2,6 @@ import { useEffect, useState } from 'react';
 import { api } from '../services/api';
 import type { Company } from '../types/company';
 import { CompanyField } from './CompanyField';
-import { TravelManagerForm } from './TravelManagerForm';
 import { format, parseISO, parse, isValid } from 'date-fns';
 import SmartSelectField from './base/SmartSelectField';
 import { MaskedInput } from './base/MaskedInput';
@@ -53,7 +52,6 @@ export function CompanyForm({ companyId, groupId, onCancelCreate, onSuccess }: P
 	);
 
 	const [editMode, setEditMode] = useState(companyId ? false : true);
-	const [addingNewContact, setAddingNewContact] = useState(false);
 	const [showConfirmModal, setShowConfirmModal] = useState(false);
 	const [newCompanyId, setnewCompanyId] = useState<number | null>(null);
 
@@ -238,47 +236,6 @@ export function CompanyForm({ companyId, groupId, onCancelCreate, onSuccess }: P
 				</div>
 			</form>
 
-			{company.id && (
-				<div className="mt-12 bg-white border border-gray-200 rounded-lg p-6 shadow-sm">
-
-					<div className="flex justify-between items-center mb-4">
-						<h3 className="text-md font-semibold text-gray-800">Gestores de Viagem</h3>
-						{!addingNewContact && company.id && (
-							<Button rounded onClick={() => setAddingNewContact(true)}>Novo gestor de viagem</Button>
-						)}
-					</div>
-
-					<div className="space-y-4">
-						{addingNewContact && (
-							<TravelManagerForm
-								companyId={company.id!}
-								onUpdate={() =>
-									api.get<Company>(`companies/companies/${company.id}/`).then((res) => {
-										setCompany(res.data);
-										setAddingNewContact(false);
-									})
-								}
-								onClose={() => setAddingNewContact(false)}
-							/>
-						)}
-
-						{company.travel_managers.length > 0 ? (
-							company.travel_managers.map((contact) => (
-								<TravelManagerForm
-									key={contact.id}
-									contact={contact}
-									companyId={company.id!}
-									onUpdate={() =>
-										api.get<Company>(`companies/companies/${company.id}/`).then((res) => setCompany(res.data))
-									}
-								/>
-							))
-						) : (
-							<p className="text-sm text-gray-500 italic">Nenhum gestor de viagem cadastrado.</p>
-						)}
-					</div>
-				</div>
-			)}
 			<ConfirmModal
 				title="Definir como principal"
 				message={`Deseja tornar "${company.name}" como empresa principal do grupo?`}

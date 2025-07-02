@@ -9,6 +9,7 @@ import Button from "../base/Button";
 import { CheckCircle, CircleAlert, CircleX, Search } from "lucide-react";
 import Input from "../base/Input";
 import { useDebounce } from "use-debounce";
+import Table from "@/components/base/Table";
 
 
 export function GroupList() {
@@ -38,7 +39,7 @@ export function GroupList() {
         group.name,
         company?.cnpj,
         company?.point_of_sale?.name,
-        dateToString(company?.current_contract?.expiration_date), !
+        dateToString(company?.current_contract?.expiration_date),
         company?.account_executive?.name,
       ];
 
@@ -100,44 +101,28 @@ export function GroupList() {
         </div>
       </div>
 
-      <div className="overflow-x-auto">
-        <table className="min-w-full text-sm text-left">
-          <thead className="bg-gray-200 text-gray-600 font-medium">
-            <tr>
-              <th className="px-4 py-3">Grupos</th>
-              <th className="px-4 py-3">CNPJ</th>
-              <th className="px-4 py-3">Posto de venda</th>
-              <th className="px-4 py-3">Vencimento de contrato</th>
-              <th className="px-4 py-3">Executivo</th>
-            </tr>
-          </thead>
-          <tbody className="divide-y divide-gray-200">
-            {filteredGroups.map((group) => {
-              const mainCompany = group.companies?.find(
-                (company: Company) => company.id === group.main_company
-              );
-              return (
-                <tr
-                  key={group.id}
-                  onClick={() => navigate(`/companies/groups/${group.id}`)}
-                  className="cursor-pointer odd:bg-white even:bg-gray-50 hover:bg-gray-100 transition"
-                >
-                  <td className="px-4 py-3 text-primary font-medium">{group.name}</td>
-                  <td className="px-4 py-3">{mainCompany?.cnpj || "—"}</td>
-                  <td className="px-4 py-3">{mainCompany?.point_of_sale?.name || "—"}</td>
-                  <td className="px-4 py-3">
-                    <div className="flex items-center gap-2">
-                      {dateToString(mainCompany?.current_contract?.expiration_date) || "—"}
-                      {renderStatusIcon(mainCompany?.current_contract?.status)}
-                    </div>
-                  </td>
-                  <td className="px-4 py-3">{mainCompany?.account_executive?.name || "—"}</td>
-                </tr>
-              );
-            })}
-          </tbody>
-        </table>
-      </div>
+      <Table
+        headers={["Grupos", "CNPJ", "Posto de venda", "Vencimento de contrato", "Executivo"]}
+        rows={filteredGroups.map((group) => {
+          const mainCompany = group.companies?.find(
+            (company: Company) => company.id === group.main_company
+          );
+          return {
+            key: group.id,
+            onClick: () => navigate(`/companies/groups/${group.id}`),
+            columns: [
+              group.name,
+              mainCompany?.cnpj || "—",
+              mainCompany?.point_of_sale?.name || "—",
+              <div className="flex items-center gap-2">
+                {dateToString(mainCompany?.current_contract?.expiration_date) || "—"}
+                {renderStatusIcon(mainCompany?.current_contract?.status)}
+              </div>,
+              mainCompany?.account_executive?.name || "—",
+            ],
+          };
+        })}
+      />
     </section>
   );
 }
