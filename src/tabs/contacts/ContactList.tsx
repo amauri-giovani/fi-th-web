@@ -1,10 +1,10 @@
 import { useEffect, useState } from "react";
 import { api } from "@/services/api";
 import type { CompanyContact } from "@/types/company";
-import { Search } from "lucide-react";
 import Table from "@/components/base/Table";
-import Input from "@/components/base/Input";
-import SelectField from "@/components/base/SelectField";
+import Select from "@/components/base/Select";
+import SearchInput from "@/components/base/SearchInput";
+
 
 type Props = {
   groupId: number;
@@ -13,8 +13,12 @@ type Props = {
 
 export default function ContactList({ groupId, onSelect }: Props) {
   const [contacts, setContacts] = useState<CompanyContact[]>([]);
-  const [searchTerm, setSearchTerm] = useState("");
   const [filterType, setFilterType] = useState<string | number | null>("all");
+  const [filteredContacts, setFilteredContacts] = useState<CompanyContact[]>([]);
+
+  useEffect(() => {
+    setFilteredContacts(contacts);
+  }, [contacts]);
 
   const typeOptions = [
     { id: "all", name: "Todos os tipos" },
@@ -26,27 +30,33 @@ export default function ContactList({ groupId, onSelect }: Props) {
     { id: "is_vip", name: "VIP" },
   ];
 
-  const filteredContacts = contacts.filter((contact) => {
-    const term = searchTerm.toLowerCase();
+  function handleSearch(term: string) {
+    const lower = term.toLowerCase();
 
-    const matchesSearch =
-      contact.name.toLowerCase().includes(term) ||
-      contact.email.toLowerCase().includes(term) ||
-      contact.role.toLowerCase().includes(term) ||
-      contact.phone?.toLowerCase().includes(term) ||
-      contact.mobile?.toLowerCase().includes(term);
+    const filtered = contacts.filter((contact) => {
+      const matchesSearch = (
+        (contact.name || "").toLowerCase().includes(lower) ||
+        (contact.email || "").toLowerCase().includes(lower) ||
+        (contact.role || "").toLowerCase().includes(lower) ||
+        (contact.phone || "").toLowerCase().includes(lower) ||
+        (contact.mobile || "").toLowerCase().includes(lower)
+      );
 
-    const matchesType =
-      filterType === "all" ||
-      (filterType === "is_travel_manager" && contact.is_travel_manager) ||
-      (filterType === "is_billing_contact" && contact.is_billing_contact) ||
-      (filterType === "is_financial_contact" && contact.is_financial_contact) ||
-      (filterType === "is_commercial_contact" && contact.is_commercial_contact) || 
-      (filterType === "is_secretary_vip" && contact.is_secretary_vip) ||
-      (filterType === "is_vip" && contact.is_vip);
+      const matchesType =
+        filterType === "all" ||
+        (filterType === "is_travel_manager" && contact.is_travel_manager) ||
+        (filterType === "is_billing_contact" && contact.is_billing_contact) ||
+        (filterType === "is_financial_contact" && contact.is_financial_contact) ||
+        (filterType === "is_commercial_contact" && contact.is_commercial_contact) ||
+        (filterType === "is_secretary_vip" && contact.is_secretary_vip) ||
+        (filterType === "is_vip" && contact.is_vip);
 
-    return matchesSearch && matchesType;
-  });
+      return matchesSearch && matchesType;
+    });
+
+    setFilteredContacts(filtered);
+  }
+
 
   useEffect(() => {
     api
@@ -69,22 +79,11 @@ export default function ContactList({ groupId, onSelect }: Props) {
 
   return (
     <div className="mt-4">
-      <div className="flex gap-4 mb-4 items-end">
-        <div style={{ width: "500px" }}>
-          <div className="relative">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 w-4 h-4 pointer-events-none" />
-            <Input
-              type="text"
-              placeholder="Buscar"
-              className="pl-9"
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-            />
-          </div>
-        </div>
+      <div className="flex gap-4 mb-4 items-center">
+        <SearchInput onSearch={handleSearch} />
 
         <div style={{ minWidth: "220px" }}>
-          <SelectField
+          <Select
             name="contactType"
             value={filterType}
             onChange={(e) => setFilterType(e.value || null)}
@@ -95,13 +94,7 @@ export default function ContactList({ groupId, onSelect }: Props) {
       </div>
 
       <Table
-        headers={[
-          "Nome",
-          "Email",
-          "Telefone",
-          "Cargo",
-          "Empresa vinculada",
-        ]}
+        headers={["Nome", "Email", "Telefone", "Cargo", "Empresa vinculada"]}
         rows={rows}
       />
     </div>

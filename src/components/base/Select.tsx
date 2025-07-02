@@ -13,7 +13,7 @@ type Props = {
   placeholder?: string | null;
 };
 
-export default function SelectField({
+export default function Select({
   name,
   value,
   options,

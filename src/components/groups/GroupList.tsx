@@ -6,19 +6,20 @@ import GroupForm from "@/components/groups/GroupForm";
 import { toast } from "react-toastify";
 import { format, parseISO } from "date-fns";
 import Button from "../base/Button";
-import { CheckCircle, CircleAlert, CircleX, Search } from "lucide-react";
-import Input from "../base/Input";
-import { useDebounce } from "use-debounce";
+import { CheckCircle, CircleAlert, CircleX } from "lucide-react";
 import Table from "@/components/base/Table";
+import SearchInput from "@/components/base/SearchInput";
 
 
 export function GroupList() {
   const navigate = useNavigate();
   const [groups, setGroups] = useState<Group[]>([]);
   const [showGroupForm, setShowGroupForm] = useState(false);
-  const [searchTerm, setSearchTerm] = useState("");
-  const [debouncedSearchTerm] = useDebounce(searchTerm, 200);
-  const filteredGroups = filterGroups(groups, debouncedSearchTerm);
+  const [filteredGroups, setFilteredGroups] = useState<Group[]>([]);
+
+  useEffect(() => {
+    setFilteredGroups(groups);
+  }, [groups]);
 
   const fetchGroups = () => {
     api
@@ -69,7 +70,7 @@ export function GroupList() {
   }, []);
 
   return (
-    <section>
+    <section className="p-6">
       <div className="flex justify-between items-center mb-6">
         <h2 className="text-2xl font-semibold text-gray-800">Grupos cadastrados</h2>
         <Button rounded onClick={() => setShowGroupForm(true)}>
@@ -87,18 +88,9 @@ export function GroupList() {
           }}
         />
       )}
-
-      <div className="mb-4" style={{ width: "500px" }}>
-        <div className="relative">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 w-4 h-4 pointer-events-none" />
-          <Input
-            type="text"
-            placeholder="Buscar"
-            className="pl-9"
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
-          />
-        </div>
+      
+      <div className="mb-4" >
+        <SearchInput onSearch={(term) => setFilteredGroups(filterGroups(groups, term))} />
       </div>
 
       <Table

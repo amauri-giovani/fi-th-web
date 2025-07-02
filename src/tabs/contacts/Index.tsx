@@ -29,7 +29,7 @@ export default function ContactsTab({ group }: Props) {
   return (
     <div className="mb-6">
       <div className="flex justify-between items-center mb-4">
-        <h2 className="text-xl font-semibold text-gray-800">Contatos</h2>
+        <h2 className="text-xl font-bold text-primary">Contatos</h2>
 
         {(creatingNew || selectedContact) ? (
           <Button

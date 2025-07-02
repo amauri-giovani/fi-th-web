@@ -1,10 +1,11 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import type { Company } from "@/types/company";
 import Button from "@/components/base/Button";
 import ConfirmModal from "@/components/base/ConfirmModal";
 import { api } from "@/services/api";
 import { toast } from "react-toastify";
 import Table from "@/components/base/Table";
+import SearchInput from "@/components/base/SearchInput";
 
 
 type Props = {
@@ -23,9 +24,27 @@ export default function CompaniesList({
   onUpdateMainCompany,
 }: Props) {
   if (!companies || companies.length === 0) return null;
-  const main = companies.find((c) => c.id === mainCompanyId);
-  const others = companies.filter((c) => c.id !== mainCompanyId);
   const [modalCompany, setModalCompany] = useState<Company | null>(null);
+  const [filteredCompanies, setFilteredCompanies] = useState<Company[]>(companies);
+  const main = filteredCompanies.find((c) => c.id === mainCompanyId);
+  const others = filteredCompanies.filter((c) => c.id !== mainCompanyId);
+
+  useEffect(() => {
+    setFilteredCompanies(companies);
+  }, [companies]);
+
+  function handleSearch(term: string) {
+    const lower = term.toLowerCase();
+
+    const filtered = companies.filter((c) =>
+      (c.name || "").toLowerCase().includes(lower) ||
+      (c.fantasy_name || "").toLowerCase().includes(lower) ||
+      (c.cnpj || "").toLowerCase().includes(lower) ||
+      (c.benner_code || "").toLowerCase().includes(lower)
+    );
+
+    setFilteredCompanies(filtered);
+  }
 
   const handleSetAsMain = () => {
     if (!modalCompany) return;
@@ -105,6 +124,10 @@ export default function CompaniesList({
 
   return (
     <>
+      <div className="mb-4" style={{ width: "500px" }}>
+        <SearchInput onSearch={handleSearch} />
+      </div>
+
       <Table
         headers={["Razão social", "Fantasia", "CNPJ", "Endereço Completo", "Código Backoffice", ""]}
         rows={rows}

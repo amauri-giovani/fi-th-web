@@ -179,7 +179,7 @@ export function CompanyForm({ companyId, groupId, onCancelCreate, onSuccess }: P
 	return (
 		<>
 			<form onSubmit={handleSubmit}>
-				<h2 className="text-lg font-semibold text-gray-800 mb-4">
+				<h2 className="text-lg font-bold text-primary mb-4">
 					Informações Gerais
 				</h2>
 
