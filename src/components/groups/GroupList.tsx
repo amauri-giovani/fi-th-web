@@ -1,21 +1,23 @@
 import { useEffect, useState } from "react";
 import { api } from "../../services/api";
-import type { Company, Group } from "../../types/company";
+import type { Group } from "../../types/group";
 import { useNavigate } from "react-router-dom";
-import GroupForm from "@/components/groups/GroupForm";
 import { toast } from "react-toastify";
-import { format, parseISO } from "date-fns";
 import Button from "../base/Button";
-import { CheckCircle, CircleAlert, CircleX } from "lucide-react";
 import Table from "@/components/base/Table";
 import SearchInput from "@/components/base/SearchInput";
-
+import { CheckCircle, CircleAlert, CircleX, Undo2 } from "lucide-react";
+import { GroupForm } from "./GroupForm";
 
 export function GroupList() {
   const navigate = useNavigate();
   const [groups, setGroups] = useState<Group[]>([]);
-  const [showGroupForm, setShowGroupForm] = useState(false);
+  const [creating, setCreating] = useState(false);
   const [filteredGroups, setFilteredGroups] = useState<Group[]>([]);
+
+  useEffect(() => {
+    fetchGroups();
+  }, []);
 
   useEffect(() => {
     setFilteredGroups(groups);
@@ -23,7 +25,7 @@ export function GroupList() {
 
   const fetchGroups = () => {
     api
-      .get<Group[]>("/companies/groups/")
+      .get<Group[]>("/groups/")
       .then((res) => setGroups(res.data))
       .catch((err) => console.error("Erro ao carregar grupos:", err));
   };
@@ -34,25 +36,17 @@ export function GroupList() {
     const lowerTerm = term.toLowerCase();
 
     return groups.filter((group) => {
-      const company = group.companies?.find(c => c.id === group.main_company);
-
       const valuesToSearch = [
         group.name,
-        company?.cnpj,
-        company?.point_of_sale?.name,
-        dateToString(company?.current_contract?.expiration_date),
-        company?.account_executive?.name,
+        group.main_company?.cnpj,
+        group.point_of_sale?.name,
+        group.account_executive?.name,
       ];
 
       return valuesToSearch.some((value) =>
         String(value || "").toLowerCase().includes(lowerTerm)
       );
     });
-  }
-
-  function dateToString(isoDate?: string) {
-    if (!isoDate || isNaN(Date.parse(isoDate))) return "";
-    return format(parseISO(isoDate), "dd/MM/yyyy");
   }
 
   function renderStatusIcon(status: string | undefined) {
@@ -65,56 +59,57 @@ export function GroupList() {
     return iconMap[status as keyof typeof iconMap] || null;
   }
 
-  useEffect(() => {
-    fetchGroups();
-  }, []);
-
   return (
-    <section className="p-6">
-      <div className="flex justify-between items-center mb-6">
+    <section className="p-6 space-y-6">
+      <div className="flex justify-between items-center">
         <h2 className="text-2xl font-semibold text-gray-800">Grupos cadastrados</h2>
-        <Button rounded onClick={() => setShowGroupForm(true)}>
-          Adicionar novo grupo
-        </Button>
+
+        {creating ? (
+          <Button rounded variant="inverted" className="flex items-center" onClick={() => setCreating(false)}>
+            <Undo2 className="w-4 h-4 mr-2" />
+            Voltar à lista de grupos
+          </Button>
+        ) : (
+          <Button rounded onClick={() => setCreating(true)}>
+            Adicionar novo grupo
+          </Button>
+        )}
       </div>
 
-      {showGroupForm && (
+      {creating ? (
         <GroupForm
-          onCancel={() => setShowGroupForm(false)}
+          onCancelCreate={() => setCreating(false)}
           onSuccess={() => {
-            setShowGroupForm(false);
             fetchGroups();
+            setCreating(false);
             toast.success("Grupo criado com sucesso!");
           }}
         />
-      )}
-      
-      <div className="mb-4" >
-        <SearchInput onSearch={(term) => setFilteredGroups(filterGroups(groups, term))} />
-      </div>
+      ) : (
+        <>
+          <div className="mb-4">
+            <SearchInput onSearch={(term) => setFilteredGroups(filterGroups(groups, term))} />
+          </div>
 
-      <Table
-        headers={["Grupos", "CNPJ", "Posto de venda", "Vencimento de contrato", "Executivo"]}
-        rows={filteredGroups.map((group) => {
-          const mainCompany = group.companies?.find(
-            (company: Company) => company.id === group.main_company
-          );
-          return {
-            key: group.id,
-            onClick: () => navigate(`/companies/groups/${group.id}`),
-            columns: [
-              group.name,
-              mainCompany?.cnpj || "—",
-              mainCompany?.point_of_sale?.name || "—",
-              <div className="flex items-center gap-2">
-                {dateToString(mainCompany?.current_contract?.expiration_date) || "—"}
-                {renderStatusIcon(mainCompany?.current_contract?.status)}
-              </div>,
-              mainCompany?.account_executive?.name || "—",
-            ],
-          };
-        })}
-      />
+          <Table
+            headers={["Grupos", "CNPJ", "Ponto de venda", "Executivo", "Situação dos contratos"]}
+            rows={filteredGroups.map((group) => ({
+              key: group.id!,
+              onClick: () => navigate(`/groups/${group.id}`),
+              columns: [
+                group.name,
+                group.main_company?.cnpj || "—",
+                group.point_of_sale?.name || "—",
+                group.account_executive?.name || "—",
+                <div className="flex items-center gap-2">
+                  {group.contracts_status || "—"}
+                  {renderStatusIcon(group.contracts_status)}
+                </div>,
+              ],
+            }))}
+          />
+        </>
+      )}
     </section>
   );
 }

@@ -17,37 +17,23 @@ type Props = {
 	onSuccess?: (company: Company) => void;
 };
 
-export function CompanyForm({ companyId, groupId, onCancelCreate, onSuccess }: Props) {
+export default function CompanyForm({ companyId, groupId, onCancelCreate, onSuccess }: Props) {
 	const [company, setCompany] = useState<Company | null>(() =>
 		companyId
 			? null
 			: {
-				id: undefined,
-				name: '',
-				fantasy_name: '',
-				cnpj: '',
-				full_address: '',
-				segment: '',
-				benner_code: '',
-				obt_link: '',
-				website: '',
-				notes: '',
-				go_live: '',
-				point_of_sale: null,
+				name: "",
+				fantasy_name: "",
+				cnpj: "",
+				full_address: "",
+				segment: "",
+				notes: "",
+				go_live: "",
 				group: {
-					id: groupId,
-					name: '',
-					slug: ''
+					id: null,
+					name: "",
 				},
-				travel_managers: [],
-				account_executive: {
-					id: 0,
-					name: ""
-				},
-				current_contract: {
-					expiration_date: "",
-					status: ""
-				}
+				contracts: [],
 			}
 	);
 
@@ -58,7 +44,7 @@ export function CompanyForm({ companyId, groupId, onCancelCreate, onSuccess }: P
 	useEffect(() => {
 		if (!companyId) return;
 
-		api.get<Company>(`companies/companies/${companyId}/`)
+		api.get<Company>(`/companies/${companyId}/`)
 			.then(res => {
 				const data = res.data;
 				data.go_live = dateToString(data.go_live);
@@ -107,8 +93,8 @@ export function CompanyForm({ companyId, groupId, onCancelCreate, onSuccess }: P
 		delete payload.travel_managers;
 
 		const request = company.id
-			? api.put(`companies/companies/${company.id}/`, payload)
-			: api.post('companies/companies/', payload);
+			? api.put(`companies/${company.id}/`, payload)
+			: api.post('companies/', payload);
 
 		request
 			.then((res) => {
@@ -120,7 +106,7 @@ export function CompanyForm({ companyId, groupId, onCancelCreate, onSuccess }: P
 				setEditMode(false);
 
 				if (!companyId) {
-					api.get(`/companies/groups/${groupId}/`).then((groupRes) => {
+					api.get(`/groups/${groupId}/`).then((groupRes) => {
 						if (!groupRes.data.main_company) {
 							setnewCompanyId(newCompany.id);
 							setShowConfirmModal(true);
@@ -143,7 +129,7 @@ export function CompanyForm({ companyId, groupId, onCancelCreate, onSuccess }: P
 			return;
 		}
 		api
-			.patch(`/companies/groups/${groupId}/`, { main_company: newCompanyId })
+			.patch(`/groups/${groupId}/`, { main_company: newCompanyId })
 			.then(() => {
 				onSuccess?.(company!);
 				console.log("Empresa definida como principal com sucesso");
@@ -162,7 +148,7 @@ export function CompanyForm({ companyId, groupId, onCancelCreate, onSuccess }: P
 	function handleCancel() {
 		if (companyId) {
 			api
-				.get<Company>(`companies/companies/${companyId}/`)
+				.get<Company>(`companies/${companyId}/`)
 				.then((res) => {
 					const data = res.data;
 					data.go_live = dateToString(data.go_live);

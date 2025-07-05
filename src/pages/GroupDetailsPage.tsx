@@ -1,23 +1,24 @@
 import { useParams } from "react-router-dom";
 import { useEffect, useState } from "react";
 import { GroupTabs } from "@/components/layout/GroupTabs";
-import { GroupGeneralTab } from "@/components/groups/GroupGeneralTab";
 import { fetchGroupById } from "@/services/groupService";
-import type { Group } from "@/types/company";
+import type { Group } from "@/types/group";
 import CompaniesTab from "@/tabs/companies/Index";
 import ContactsTab from "@/tabs/contacts/Index";
+import AgreementsTab from "@/tabs/agreements/Index";
+import GeneralTab from "@/tabs/general/Index";
 
 
 const TABS = [
   "Geral",
+  "Empresas",
+  "Contatos",
+  "Operação",
   "VIPs",
+  "Acordos",
   "Comercial",
   "Financeiro",
-  "Operação",
-  "Suporte",
-  "Acordos",
-  "Empresas",
-  "Contatos"
+  "Suporte"
 ];
 
 export function GroupDetailsPage() {
@@ -65,7 +66,7 @@ export function GroupDetailsPage() {
 
       <div className="mt-8">
         {activeTab === "Geral" && (
-          <GroupGeneralTab group={group} setActiveTab={setActiveTab} />
+          <GeneralTab group={group} onUpdate={setGroup} />
         )}
 
         {activeTab === "Empresas" && (
@@ -76,7 +77,11 @@ export function GroupDetailsPage() {
           <ContactsTab group={group} />
         )}
 
-        {activeTab !== "Geral" && activeTab !== "Empresas" && activeTab !== "Contatos" && (
+        {activeTab === "Acordos" && (
+          <AgreementsTab group={group} />
+        )}
+
+        {activeTab !== "Geral" && activeTab !== "Empresas" && activeTab !== "Contatos" && activeTab !== "Acordos" && (
           <div className="text-gray-500 italic">
             Conteúdo da aba "{activeTab}" em construção...
           </div>

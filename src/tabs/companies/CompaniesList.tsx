@@ -54,7 +54,7 @@ export default function CompaniesList({
       return;
     }
 
-    api.patch(`/companies/groups/${groupId}/`, {
+    api.patch(`/groups/${groupId}/`, {
       main_company: modalCompany.id,
     })
       .then(() => {

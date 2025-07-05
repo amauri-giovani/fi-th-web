@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { api } from "@/services/api";
-import type { CompanyContact } from "@/types/company";
+import type { CompanyContact } from "@/types/contact";
 import Table from "@/components/base/Table";
 import Select from "@/components/base/Select";
 import SearchInput from "@/components/base/SearchInput";

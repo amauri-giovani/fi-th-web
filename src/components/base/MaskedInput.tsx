@@ -55,7 +55,7 @@ export function MaskedInput({ name, value, onChange, disabled, hasError, placeho
         const syntheticEvent = {
           target: {
             name,
-            value: values.value, // envia sem máscara
+            value: values.value,
           },
         } as React.ChangeEvent<HTMLInputElement>;
         onChange(syntheticEvent);

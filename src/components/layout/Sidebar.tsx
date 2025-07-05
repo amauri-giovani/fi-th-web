@@ -3,7 +3,7 @@ import { NavLink } from "react-router-dom";
 
 const menuItems = [
   { label: "Home", icon: <Home size={20} />, to: "/" },
-  { label: "Grupos", icon: <Users size={20} />, to: "/companies/groups" },
+  { label: "Grupos", icon: <Users size={20} />, to: "/groups" },
   { label: "Pos", icon: <MapPin size={20} />, to: "/pos" },
 ];
 

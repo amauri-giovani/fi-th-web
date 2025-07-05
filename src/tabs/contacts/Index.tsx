@@ -1,9 +1,10 @@
 import { useState } from "react";
-import type { CompanyContact, Group } from "@/types/company";
+import type { CompanyContact } from "@/types/contact";
 import ContactList from "./ContactList";
 import CompanyContactForm from "@/components/CompanyContactForm";
 import Button from "@/components/base/Button";
 import { Undo2 } from "lucide-react";
+import type { Group } from "@/types/group";
 
 
 type Props = {

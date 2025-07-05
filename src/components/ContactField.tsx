@@ -1,4 +1,4 @@
-import type { CompanyContact } from '../types/company';
+import type { CompanyContact } from '../types/contact';
 import Input from './base/Input';
 import { MaskedInput } from './base/MaskedInput';
 

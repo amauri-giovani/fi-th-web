@@ -8,16 +8,20 @@ export interface TableProps {
     onClick?: () => void;
     columns: (string | ReactNode)[];
   }[];
+  columnClasses?: string[];
 }
 
-export default function Table({ headers, rows }: TableProps) {
+export default function Table({ headers, rows, columnClasses = [] }: TableProps) {
   return (
     <div className="overflow-x-auto">
-      <table className="min-w-full text-sm text-left">
+      <table className="table-fixed w-full text-sm text-left">
         <thead className="bg-gray-200 text-gray-600 font-medium">
           <tr>
             {headers.map((header, index) => (
-              <th key={index} className="px-4 py-3">
+              <th
+                key={index}
+                className={`px-4 py-3 ${columnClasses[index] || ""}`}
+              >
                 {header}
               </th>
             ))}
@@ -31,7 +35,10 @@ export default function Table({ headers, rows }: TableProps) {
               className="cursor-pointer odd:bg-white even:bg-gray-50 hover:bg-gray-100 transition"
             >
               {row.columns.map((col, colIndex) => (
-                <td key={colIndex} className="px-4 py-3">
+                <td
+                  key={colIndex}
+                  className={`px-4 py-3 ${columnClasses[colIndex] || ""}`}
+                >
                   {col}
                 </td>
               ))}

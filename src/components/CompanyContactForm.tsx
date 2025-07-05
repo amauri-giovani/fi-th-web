@@ -4,7 +4,7 @@ import { api } from "@/services/api";
 import Button from "./base/Button";
 import { ContactField } from "./ContactField";
 import Checkbox from "./base/Checkbox";
-import type { CompanyContact } from "@/types/company";
+import type { CompanyContact } from "@/types/contact";
 
 
 interface Props {

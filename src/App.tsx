@@ -13,8 +13,8 @@ export function App() {
     <Layout>
       <Routes>
         <Route path="/" element={<HomePage />} />
-        <Route path="/companies/groups" element={<GroupList />} />
-        <Route path="/companies/groups/:id" element={<GroupDetailsPage />} />
+        <Route path="/groups" element={<GroupList />} />
+        <Route path="/groups/:id" element={<GroupDetailsPage />} />
         <Route path="/pos" element={<PosPage />} />
       </Routes>
       <ToastContainer position="top-right" autoClose={3000} />

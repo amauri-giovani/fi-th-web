@@ -1,11 +1,13 @@
 import { useEffect, useState } from "react";
 import { api } from "@/services/api";
-import type { Company, Group } from "@/types/company";
-import { CompanyForm } from "@/components/CompanyForm";
+import type { Company } from "@/types/company";
 import CompaniesList from "./CompaniesList";
 import Button from "@/components/base/Button";
 import { Undo2 } from "lucide-react";
 import { toast } from "react-toastify";
+import type { Group } from "@/types/group";
+import CompanyForm from "@/components/CompanyForm";
+
 
 type Props = {
   group: Group;
@@ -18,7 +20,7 @@ export default function CompaniesTab({ group }: Props) {
 
   const fetchCompanies = () => {
     api
-      .get<Company[]>(`/companies/companies/?group=${group.id}`)
+      .get<Company[]>(`companies/?group=${group.id}`)
       .then((res) => setCompanies(res.data))
       .catch((err) =>
         console.error("Erro ao buscar empresas do grupo:", err)
@@ -70,7 +72,7 @@ export default function CompaniesTab({ group }: Props) {
           groupId={group.id}
           onSelect={handleSelectCompany}
           onUpdateMainCompany={() => {
-            api.get(`/companies/groups/${group.id}/`).then((res) => {
+            api.get(`/groups/${group.id}/`).then((res) => {
               group.main_company = res.data.main_company;
               fetchCompanies();
             });
@@ -85,7 +87,7 @@ export default function CompaniesTab({ group }: Props) {
             companyId={selectedCompany?.id}
             onCancelCreate={handleCloseForm}
             onSuccess={(updatedCompany) => {
-              api.get(`/companies/groups/${group.id}/`).then((res) => {
+              api.get(`/groups/${group.id}/`).then((res) => {
                 group.main_company = res.data.main_company;
                 fetchCompanies();
                 setCreatingNew(false);
