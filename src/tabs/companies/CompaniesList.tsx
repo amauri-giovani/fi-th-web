@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import type { Company } from "@/types/company";
+import type { Group } from "@/types/group";
 import Button from "@/components/base/Button";
 import ConfirmModal from "@/components/base/ConfirmModal";
 import { api } from "@/services/api";
@@ -13,7 +14,7 @@ type Props = {
   mainCompanyId: number | null;
   groupId: number;
   onSelect: (company: Company) => void;
-  onUpdateMainCompany: () => void;
+  onUpdateMainCompany: (updatedGroup: Group) => void;
 };
 
 export default function CompaniesList({
@@ -46,25 +47,27 @@ export default function CompaniesList({
     setFilteredCompanies(filtered);
   }
 
-  const handleSetAsMain = () => {
+  const handleSetAsMain = async () => {
     if (!modalCompany) return;
 
     if (modalCompany.id === mainCompanyId) {
+      toast.info("Esta empresa já é a principal do grupo.");
       setModalCompany(null);
       return;
     }
 
-    api.patch(`/groups/${groupId}/`, {
-      main_company: modalCompany.id,
-    })
-      .then(() => {
-        onUpdateMainCompany();
-        toast.success(`Empresa ${modalCompany.name} definida como principal do grupo`)
-      })
-      .catch(() => {
-        toast.error("Erro ao trocar empresa principal");
-      })
-      .finally(() => setModalCompany(null));
+    try {
+      const res = await api.patch(`/groups/${groupId}/`, {
+        main_company_id: modalCompany.id,
+      });
+      onUpdateMainCompany?.(res.data);
+      toast.success(`Empresa ${modalCompany.name} definida como principal do grupo`);
+    } catch (err) {
+      console.error("Erro ao trocar principal:", err);
+      toast.error("Erro ao trocar empresa principal");
+    } finally {
+      setModalCompany(null);
+    }
   };
 
   function formatCNPJ(cnpj: string) {

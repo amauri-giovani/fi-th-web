@@ -1,12 +1,9 @@
-import { useEffect, useState } from 'react';
-import { api } from '../services/api';
-import type { Company } from '../types/company';
-import { CompanyField } from './CompanyField';
-import { format, parseISO, parse, isValid } from 'date-fns';
-import SmartSelectField from './base/SmartSelectField';
-import { MaskedInput } from './base/MaskedInput';
-import Button from './base/Button';
-import ConfirmModal from './base/ConfirmModal';
+import { useEffect, useState } from "react";
+import { api } from "../services/api";
+import type { Company } from "../types/company";
+import { CompanyField } from "./CompanyField";
+import Button from "./base/Button";
+import ConfirmModal from "./base/ConfirmModal";
 import { toast } from "react-toastify";
 
 
@@ -26,13 +23,9 @@ export default function CompanyForm({ companyId, groupId, onCancelCreate, onSucc
 				fantasy_name: "",
 				cnpj: "",
 				full_address: "",
-				segment: "",
+				benner_code: "",
 				notes: "",
-				go_live: "",
-				group: {
-					id: null,
-					name: "",
-				},
+				group: groupId,
 				contracts: [],
 			}
 	);
@@ -47,32 +40,10 @@ export default function CompanyForm({ companyId, groupId, onCancelCreate, onSucc
 		api.get<Company>(`/companies/${companyId}/`)
 			.then(res => {
 				const data = res.data;
-				data.go_live = dateToString(data.go_live);
 				setCompany(data);
 			})
-			.catch(err => console.error('Erro ao carregar empresa:', err));
+			.catch(err => console.error("Erro ao carregar empresa:", err));
 	}, [companyId]);
-
-	function dateToString(isoDate?: string) {
-		if (!isoDate || isNaN(Date.parse(isoDate))) return '';
-		return format(parseISO(isoDate), 'dd/MM/yyyy');
-	}
-
-	function stringToDate(dateBr: string): string {
-		if (!dateBr || dateBr.trim() === '') return '';
-
-		let parsed;
-
-		if (/^\d{8}$/.test(dateBr)) {
-			parsed = parse(dateBr, 'ddMMyyyy', new Date());
-		} else {
-			parsed = parse(dateBr, 'dd/MM/yyyy', new Date());
-		}
-
-		if (!isValid(parsed)) return '';
-
-		return format(parsed, 'yyyy-MM-dd');
-	}
 
 	function handleChange(event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) {
 		const { name, value } = event.target;
@@ -84,23 +55,21 @@ export default function CompanyForm({ companyId, groupId, onCancelCreate, onSucc
 		if (!company) return;
 		const payload: any = {
 			...company,
-			group_id: company.group?.id ?? groupId,
-			point_of_sale_id: company.point_of_sale?.id ?? null,
-			go_live: stringToDate(company.go_live),
+			group_id: typeof company.group === "object" && company.group !== null
+				? company.group.id
+				: groupId
 		};
 
-		delete payload.point_of_sale;
 		delete payload.travel_managers;
 
 		const request = company.id
 			? api.put(`companies/${company.id}/`, payload)
-			: api.post('companies/', payload);
+			: api.post("companies/", payload);
 
 		request
 			.then((res) => {
 				const newCompany = {
-					...res.data,
-					go_live: dateToString(res.data.go_live),
+					...res.data
 				};
 				setCompany(newCompany);
 				setEditMode(false);
@@ -147,11 +116,9 @@ export default function CompanyForm({ companyId, groupId, onCancelCreate, onSucc
 
 	function handleCancel() {
 		if (companyId) {
-			api
-				.get<Company>(`companies/${companyId}/`)
+			api.get<Company>(`companies/${companyId}/`)
 				.then((res) => {
 					const data = res.data;
-					data.go_live = dateToString(data.go_live);
 					setCompany(data);
 					setEditMode(false);
 				});
@@ -159,6 +126,9 @@ export default function CompanyForm({ companyId, groupId, onCancelCreate, onSucc
 			onCancelCreate?.();
 		}
 	}
+	// function handleCancel() {
+	// 	onCancelCreate?.();
+	// }
 
 	if (!company) return <p>Carregando...</p>;
 
@@ -169,42 +139,17 @@ export default function CompanyForm({ companyId, groupId, onCancelCreate, onSucc
 					Informações Gerais
 				</h2>
 
-				<div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+				<div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+					<CompanyField label="CNPJ" name="cnpj" value={company.cnpj} onChange={handleChange} disabled={!editMode} />
 					<CompanyField label="Razão Social" name="name" value={company.name} onChange={handleChange} disabled={!editMode} />
 					<CompanyField label="Nome Fantasia" name="fantasy_name" value={company.fantasy_name} onChange={handleChange} disabled={!editMode} />
-					<CompanyField label="CNPJ" name="cnpj" value={company.cnpj} onChange={handleChange} disabled={!editMode} />
-					<SmartSelectField
-						name="point_of_sale"
-						label="Ponto de Venda"
-						createFieldName="name"
-						value={company.point_of_sale?.id ?? null}
-						onChange={({ name, value }) =>
-							setCompany((prev) =>
-								prev ? { ...prev, [name]: { id: value, name: '' } } : prev
-							)
-						}
-						disabled={!editMode}
-					/>
 					<CompanyField label="Código Benner" name="benner_code" value={company.benner_code} onChange={handleChange} disabled={!editMode} />
-					<div>
-						<label>Go Live</label>
-						<MaskedInput
-							name="go_live"
-							value={company.go_live}
-							onChange={handleChange}
-							disabled={!editMode}
-						/>
-					</div>
-					<CompanyField label="Segmento" name="segment" value={company.segment} onChange={handleChange} disabled={!editMode} />
-					<CompanyField label="Link do OBT" name="obt_link" value={company.obt_link} onChange={handleChange} disabled={!editMode} />
-					<CompanyField label="Site" name="website" value={company.website || ''} onChange={handleChange} disabled={!editMode} />
-
-					<div className="lg:col-span-3 md:col-span-2 col-span-1">
+					<div className="lg:col-span-4 md:col-span-2 col-span-1">
 						<CompanyField label="Endereço Completo" name="full_address" value={company.full_address} onChange={handleChange} disabled={!editMode} />
 					</div>
 
-					<div className="lg:col-span-3 md:col-span-2 col-span-1">
-						<CompanyField label="Observações" name="notes" value={company.notes || ''} onChange={handleChange} disabled={!editMode} multiline />
+					<div className="lg:col-span-4 md:col-span-2 col-span-1">
+						<CompanyField label="Observações" name="notes" value={company.notes || ""} onChange={handleChange} disabled={!editMode} multiline />
 					</div>
 				</div>
 

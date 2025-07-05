@@ -1,18 +1,16 @@
 import type { ContractData } from "./contract";
 
 
+type GroupField = number | { id: number; name: string };
+
 export type Company = {
-  id?: number | null;
+  id?: number;
   name: string;
   fantasy_name: string;
   cnpj: string;
   full_address: string;
-  segment: string;
+  benner_code: string;
   notes: string;
-  go_live: string;
-  group: {
-    id: number | null;
-    name: string;
-  };
+  group: GroupField;
   contracts: ContractData[];
 };

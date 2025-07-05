@@ -70,7 +70,9 @@ export function GroupDetailsPage() {
         )}
 
         {activeTab === "Empresas" && (
-          <CompaniesTab group={group} />
+          <CompaniesTab group={group} onUpdateGroup={() => {
+            fetchGroupById(group.id).then(setGroup);
+          }} />
         )}
 
         {activeTab === "Contatos" && (
