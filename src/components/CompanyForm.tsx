@@ -126,19 +126,12 @@ export default function CompanyForm({ companyId, groupId, onCancelCreate, onSucc
 			onCancelCreate?.();
 		}
 	}
-	// function handleCancel() {
-	// 	onCancelCreate?.();
-	// }
 
 	if (!company) return <p>Carregando...</p>;
 
 	return (
 		<>
 			<form onSubmit={handleSubmit}>
-				<h2 className="text-lg font-bold text-primary mb-4">
-					Informações Gerais
-				</h2>
-
 				<div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
 					<CompanyField label="CNPJ" name="cnpj" value={company.cnpj} onChange={handleChange} disabled={!editMode} />
 					<CompanyField label="Razão Social" name="name" value={company.name} onChange={handleChange} disabled={!editMode} />
@@ -147,7 +140,6 @@ export default function CompanyForm({ companyId, groupId, onCancelCreate, onSucc
 					<div className="lg:col-span-4 md:col-span-2 col-span-1">
 						<CompanyField label="Endereço Completo" name="full_address" value={company.full_address} onChange={handleChange} disabled={!editMode} />
 					</div>
-
 					<div className="lg:col-span-4 md:col-span-2 col-span-1">
 						<CompanyField label="Observações" name="notes" value={company.notes || ""} onChange={handleChange} disabled={!editMode} multiline />
 					</div>

@@ -1,3 +1,4 @@
+import type { Agreement } from "./agreement";
 import type { PointOfSale } from "./catalog";
 import type { Company } from "./company";
 
@@ -18,6 +19,7 @@ export type Group = {
   };
   companies: Company[];
   contracts_status: string;
+  agreements: Agreement[];
   segment: string;
   obt_link: string;
   website: string;

@@ -31,6 +31,7 @@ export function GroupForm({ groupId, group: initialGroup, onCancelCreate, onSucc
           account_executive: { id: 0, name: "" },
           companies: [],
           contracts_status: "",
+          agreements: [],
           segment: "",
           obt_link: "",
           website: "",
@@ -177,7 +178,6 @@ export function GroupForm({ groupId, group: initialGroup, onCancelCreate, onSucc
           onChange={handleChange}
           disabled={!editMode}
         />
-
       </div>
 
       <div className="flex gap-4 mt-6">

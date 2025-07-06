@@ -70,9 +70,7 @@ export function GroupDetailsPage() {
         )}
 
         {activeTab === "Empresas" && (
-          <CompaniesTab group={group} onUpdateGroup={() => {
-            fetchGroupById(group.id).then(setGroup);
-          }} />
+          <CompaniesTab group={group} onUpdateGroup={() => {fetchGroupById(group.id).then(setGroup);}} />
         )}
 
         {activeTab === "Contatos" && (
@@ -80,7 +78,7 @@ export function GroupDetailsPage() {
         )}
 
         {activeTab === "Acordos" && (
-          <AgreementsTab group={group} />
+          <AgreementsTab group={group} onUpdate={() => {fetchGroupById(Number(id)).then(setGroup);}}/>
         )}
 
         {activeTab !== "Geral" && activeTab !== "Empresas" && activeTab !== "Contatos" && activeTab !== "Acordos" && (

@@ -7,6 +7,7 @@ import { toast } from "react-toastify";
 import type { Group } from "@/types/group";
 import CompanyForm from "@/components/CompanyForm";
 
+
 type Props = {
   group: Group;
   onUpdateGroup: (updatedGroup: Group) => void;

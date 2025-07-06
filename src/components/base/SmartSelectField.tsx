@@ -4,6 +4,7 @@ import { Plus } from "lucide-react";
 import InputModal from "./InputModal";
 import { toast } from "react-toastify";
 
+
 type Option = {
   id: string | number;
   name: string;
@@ -19,6 +20,7 @@ type Props = {
   placeholder?: string;
   options?: Option[];
   allowCreate?: boolean;
+  apiEndpoint?: string;
 };
 
 export default function SmartSelectField({
@@ -31,6 +33,7 @@ export default function SmartSelectField({
   placeholder = "Selecione uma opção",
   options = [],
   allowCreate,
+  apiEndpoint
 }: Props) {
   const [internalOptions, setInternalOptions] = useState<Option[]>(options);
   const [modalOpen, setModalOpen] = useState(false);
@@ -41,9 +44,10 @@ export default function SmartSelectField({
 
   const createNewOption = (label: string) => {
     const field = createFieldName || "name";
+    const endpoint = apiEndpoint || `/catalogs/${name.replace(/_/g, "-")}/`;
 
     api
-      .post(`/catalogs/${name.replace(/_/g, "-")}/`, { [field]: label })
+      .post(endpoint, { [field]: label })
       .then((res) => {
         const newItem = res.data;
         const updated = [...internalOptions, newItem];
