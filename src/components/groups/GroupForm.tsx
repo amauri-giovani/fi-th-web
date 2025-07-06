@@ -87,8 +87,10 @@ export function GroupForm({ groupId, group: initialGroup, onCancelCreate, onSucc
       main_company_id: validId(group.main_company?.id),
     };
 
-    const request = groupId
-      ? api.patch(`/groups/${groupId}/`, payload)
+    const isEdit = group.id !== 0;
+
+    const request = isEdit
+      ? api.patch(`/groups/${group.id}/`, payload)
       : api.post("/groups/", payload);
 
     request
@@ -96,7 +98,7 @@ export function GroupForm({ groupId, group: initialGroup, onCancelCreate, onSucc
         const saved = { ...res.data, go_live: dateToString(res.data.go_live) };
         setGroup(saved);
         setEditMode(false);
-        toast.success(groupId ? "Grupo atualizado com sucesso!" : "Grupo criado com sucesso!");
+        toast.success(isEdit ? "Grupo atualizado com sucesso!" : "Grupo criado com sucesso!");
         onSuccess?.(saved);
       })
       .catch((err) => {

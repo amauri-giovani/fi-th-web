@@ -3,7 +3,7 @@ import type { Agreement } from "@/types/agreement";
 import { useState, useEffect } from "react";
 import SearchInput from "@/components/base/SearchInput";
 import Button from "@/components/base/Button";
-
+import { api } from "@/services/api";
 
 type Props = {
   agreements: Agreement[];
@@ -12,23 +12,34 @@ type Props = {
 };
 
 const SECTIONS = [
-  { slug: "aereo", title: "Companhias aéreas", id: 1 },
-  { slug: "hotel", title: "Hotéis", id: 3 },
-  { slug: "veiculo", title: "Locadoras", id: 2 },
+  { slug: "aereo", title: "Companhias aéreas" },
+  { slug: "veiculo", title: "Locadoras" },
+  { slug: "hotel", title: "Hotéis" },
 ];
 
 export default function AgreementList({ agreements, onSelect, onCreate }: Props) {
   const [filtered, setFiltered] = useState<Agreement[]>(agreements);
+  const [productTypes, setProductTypes] = useState<{ id: number; name: string; slug: string }[]>([]);
 
   useEffect(() => {
     setFiltered(agreements);
   }, [agreements]);
 
+  useEffect(() => {
+    api.get("/catalogs/form-context/?fields=products")
+      .then((res) => {
+        setProductTypes(res.data.product_options);
+      })
+      .catch((err) => {
+        console.error("Erro ao buscar tipos de produto:", err);
+      });
+  }, []);
+
   function handleSearch(term: string) {
     const lower = term.toLowerCase();
     const filteredData = agreements.filter((a) =>
-      a.provider.name.toLowerCase().includes(lower) ||
-      a.code.toLowerCase().includes(lower) ||
+      (a.provider.name || "").toLowerCase().includes(lower) ||
+      (a.code || "").toLowerCase().includes(lower) ||
       (a.notes || "").toLowerCase().includes(lower)
     );
     setFiltered(filteredData);
@@ -40,8 +51,11 @@ export default function AgreementList({ agreements, onSelect, onCreate }: Props)
         <SearchInput onSearch={handleSearch} />
       </div>
 
-      {SECTIONS.map(({ slug, title, id }) => {
-        const items = filtered.filter((a) => a.product_type.slug === slug);
+      {SECTIONS.map(({ slug, title }) => {
+        const productType = productTypes.find((p) => p.slug === slug);
+        if (!productType) return null;
+
+        const items = filtered.filter((a) => a.product_type.id === productType.id);
 
         const rows = items.map((a) => ({
           key: a.id,
@@ -52,34 +66,33 @@ export default function AgreementList({ agreements, onSelect, onCreate }: Props)
             a.expiration_date,
             <div className="truncate" title={a.notes}>{a.notes || "-"}</div>,
             <div className="flex justify-end gap-2">
-              <button>✏️</button>
               <button>👁️</button>
+              <button>✏️</button>
+              <button>🗑️</button>
             </div>,
           ],
         }));
 
         return (
-          <div key={slug} className="mb-10 bg-white rounded-lg p-4 shadow-sm">
+          <div key={slug} className="mb-10">
             <div className="flex justify-between items-center mb-2">
               <h3 className="text-lg font-semibold">{title}</h3>
               <Button
                 rounded
-                onClick={() =>
-                  onCreate(id)
-                }
+                onClick={() => onCreate(productType.id)}
               >
                 Adicionar acordo
               </Button>
             </div>
 
             <Table
-              headers={["Provedor", "Código de acordo", "Vencimento de acordo", "Observações", ""]}
+              headers={["Provedor", "Código", "Vencimento", "Observações", ""]}
               rows={rows}
               columnClasses={[
                 "w-[15%]",
                 "w-[15%]",
-                "w-[15%]",
-                "w-auto pr-12",
+                "w-[12%]",
+                "w-auto pr-20",
                 "w-[40px] text-right",
               ]}
             />

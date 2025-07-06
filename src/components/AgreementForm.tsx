@@ -31,8 +31,7 @@ export default function AgreementForm({ groupId, agreement, onCancel, onSuccess 
   useEffect(() => {
     if (!editMode) return;
 
-    api
-      .get("/catalogs/form-context/?fields=provider")
+    api.get("/catalogs/form-context/?fields=provider")
       .then((res) => {
         setFormContext((prev) => ({
           ...prev,

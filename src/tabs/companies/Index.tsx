@@ -55,13 +55,21 @@ export default function CompaniesTab({ group, onUpdateGroup }: Props) {
       </div>
 
       {!creatingNew && !selectedCompany && (
-        <CompaniesList
-          companies={group.companies}
-          mainCompanyId={(group.main_company as any)?.id ?? group.main_company}
-          groupId={group.id}
-          onSelect={handleSelectCompany}
-          onUpdateMainCompany={onUpdateGroup}
-        />
+        <>
+          {group.companies.length > 0 ? (
+            <CompaniesList
+              companies={group.companies}
+              mainCompanyId={(group.main_company as any)?.id ?? group.main_company}
+              groupId={group.id}
+              onSelect={handleSelectCompany}
+              onUpdateMainCompany={onUpdateGroup}
+            />
+          ) : (
+            <p className="text-sm italic text-gray-500 mt-2">
+              Nenhuma empresa cadastrada ainda. Clique no botão Adicionar nova empresa para cadastrar.
+            </p>
+          )}
+        </>
       )}
 
       {(creatingNew || selectedCompany) && (

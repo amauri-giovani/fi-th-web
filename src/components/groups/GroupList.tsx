@@ -82,7 +82,6 @@ export function GroupList() {
           onSuccess={() => {
             fetchGroups();
             setCreating(false);
-            toast.success("Grupo criado com sucesso!");
           }}
         />
       ) : (
