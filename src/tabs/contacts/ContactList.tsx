@@ -57,10 +57,9 @@ export default function ContactList({ groupId, onSelect }: Props) {
     setFilteredContacts(filtered);
   }
 
-
   useEffect(() => {
     api
-      .get(`/companies/company-contacts/?group=${groupId}`)
+      .get(`/contacts/?group=${groupId}`)
       .then((res) => setContacts(res.data))
       .catch((err) => console.error("Erro ao buscar contatos:", err));
   }, [groupId]);
@@ -73,7 +72,7 @@ export default function ContactList({ groupId, onSelect }: Props) {
       contact.email,
       contact.mobile || contact.phone,
       contact.role,
-      contact.company?.name ?? "-",
+      "-", // Usando antes para o campo de "empresa vinculada"
     ],
   }));
 

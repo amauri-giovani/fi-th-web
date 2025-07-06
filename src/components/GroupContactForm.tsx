@@ -8,15 +8,15 @@ import type { CompanyContact } from "@/types/contact";
 
 
 interface Props {
-  companyId: number;
+  groupId: number;
   contact?: CompanyContact;
   onCancel?: () => void;
   onSaved?: () => void;
   highlighted?: boolean;
 }
 
-export default function CompanyContactForm({
-  companyId,
+export default function GroupContactForm({
+  groupId,
   contact,
   onCancel,
   onSaved,
@@ -40,15 +40,10 @@ export default function CompanyContactForm({
   };
 
   const buildPayload = () => {
-    const {
-      id,
-      company,
-      ...rest
-    } = form;
-
+    const { id, ...rest } = form;
     return {
       ...rest,
-      company_id: companyId,
+      group: groupId,
     };
   };
 
@@ -58,10 +53,10 @@ export default function CompanyContactForm({
 
     try {
       if (contact?.id) {
-        await api.put(`/companies/company-contacts/${contact.id}/`, payload);
+        await api.put(`/contacts/${contact.id}/`, payload);
         toast.success("Contato atualizado com sucesso");
       } else {
-        await api.post(`/companies/company-contacts/`, payload);
+        await api.post(`/contacts/`, payload);
         toast.success("Contato criado com sucesso");
       }
 
@@ -86,8 +81,7 @@ export default function CompanyContactForm({
   return (
     <form
       onSubmit={handleSubmit}
-      className={`mb-6 bg-white border p-4 rounded-lg shadow-sm ${isHighlighted ? "border-green-400" : "border-gray-200"
-        }`}
+      className={`mb-6 bg-white border p-4 rounded-lg shadow-sm ${isHighlighted ? "border-green-400" : "border-gray-200"}`}
     >
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
         <ContactField label="Nome" name="name" value={form.name || ""} onChange={handleChange} disabled={!editMode} />
