@@ -7,6 +7,7 @@ import CompaniesTab from "@/tabs/companies/Index";
 import ContactsTab from "@/tabs/contacts/Index";
 import AgreementsTab from "@/tabs/agreements/Index";
 import GeneralTab from "@/tabs/general/Index";
+import ContractsTab from "@/tabs/commercial/Index";
 
 
 const TABS = [
@@ -81,7 +82,11 @@ export function GroupDetailsPage() {
           <AgreementsTab group={group} onUpdate={() => {fetchGroupById(Number(id)).then(setGroup);}}/>
         )}
 
-        {activeTab !== "Geral" && activeTab !== "Empresas" && activeTab !== "Contatos" && activeTab !== "Acordos" && (
+        {activeTab === "Comercial" && (
+          <ContractsTab group={group} />
+        )}
+        
+        {activeTab !== "Geral" && activeTab !== "Empresas" && activeTab !== "Contatos" && activeTab !== "Acordos" && activeTab !== "Comercial" && (
           <div className="text-gray-500 italic">
             Conteúdo da aba "{activeTab}" em construção...
           </div>

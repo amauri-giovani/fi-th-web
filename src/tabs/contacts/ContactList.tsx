@@ -21,7 +21,7 @@ export default function ContactList({ groupId, onSelect }: Props) {
   }, [contacts]);
 
   const typeOptions = [
-    { id: "all", name: "Todos os tipos" },
+    { id: "all", name: "Todos" },
     { id: "is_travel_manager", name: "Gestor de Viagem" },
     { id: "is_billing_contact", name: "Contato para Cobrança" },
     { id: "is_financial_contact", name: "Contato Financeiro" },

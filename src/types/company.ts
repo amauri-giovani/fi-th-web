@@ -1,4 +1,4 @@
-import type { ContractData } from "./contract";
+import type { ContractData } from "./commercial";
 
 
 type GroupField = number | { id: number; name: string };
